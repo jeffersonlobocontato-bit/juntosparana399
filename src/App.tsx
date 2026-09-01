@@ -11,6 +11,7 @@ import Admin from "./pages/Admin";
 import AdminPropostas from "./pages/AdminPropostas";
 import AdminPropostasPoliticas from "./pages/AdminPropostasPoliticas";
 import AdminSugestoes from "./pages/AdminSugestoes";
+import AdminWhatsApp from "./pages/AdminWhatsApp";
 import AdminEixos from "./pages/AdminEixos";
 import AdminMunicipios from "./pages/AdminMunicipios";
 import AdminUsuarios from "./pages/AdminUsuarios";
@@ -67,6 +68,7 @@ const App = () => (
             <Route path="/admin/propostas-institucionais" element={<ProtectedRoute requiredRoles={['lider_tematico']}><AdminPropostas /></ProtectedRoute>} />
             <Route path="/admin/propostas-politicas" element={<ProtectedRoute requiredRoles={[]}><AdminPropostasPoliticas /></ProtectedRoute>} />
             <Route path="/admin/sugestoes" element={<ProtectedRoute requiredRoles={['curador_municipal']}><AdminSugestoes /></ProtectedRoute>} />
+            <Route path="/admin/whatsapp" element={<ProtectedRoute requiredRoles={['admin']}><AdminWhatsApp /></ProtectedRoute>} />
             <Route path="/admin/eixos" element={<ProtectedRoute requiredRoles={[]}><AdminEixos /></ProtectedRoute>} />
             <Route path="/admin/municipios" element={<ProtectedRoute requiredRoles={[]}><AdminMunicipios /></ProtectedRoute>} />
             <Route path="/admin/usuarios" element={<ProtectedRoute requiredRoles={[]}><AdminUsuarios /></ProtectedRoute>} />

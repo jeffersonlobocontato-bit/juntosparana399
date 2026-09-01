@@ -6,7 +6,8 @@ import { z } from "npm:zod@3";
 const BodySchema = z.object({
   nome: z.string().max(200).nullable().optional(),
   municipio: z.string().min(1).max(200),
-  descricao: z.string().min(1).max(5000),
+  descricao: z.string().min(1).max(5000).optional(),
+  sugestao: z.string().min(1).max(5000).optional(),
   telefone: z.string().max(50).nullable().optional(),
   email: z.string().email().max(200).nullable().optional(),
   tema_ids: z.array(z.string().uuid()).optional(),
@@ -16,12 +17,27 @@ const BodySchema = z.object({
 
 serve(async (req) => {
   if (req.method === "OPTIONS") {
-    return new Response("ok", { headers: corsHeaders });
+    return new Response("ok", {
+      headers: { ...corsHeaders, "Access-Control-Allow-Headers": "authorization, x-ingest-token, content-type, apikey" },
+    });
   }
 
-  // Validate token
-  const token = Deno.env.get("WHATSAPP_WEBHOOK_TOKEN");
-  if (!token) {
+  const supabase = createClient(
+    Deno.env.get("SUPABASE_URL")!,
+    Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
+  );
+
+  // Resolve expected token: database config first, env fallback
+  let expectedToken = "";
+  const { data: cfg } = await supabase
+    .from("whatsapp_ingest_config")
+    .select("token")
+    .order("created_at", { ascending: true })
+    .limit(1)
+    .maybeSingle();
+  expectedToken = cfg?.token ?? Deno.env.get("WHATSAPP_WEBHOOK_TOKEN") ?? "";
+
+  if (!expectedToken) {
     return new Response(JSON.stringify({ error: "Server not configured" }), {
       status: 500,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
@@ -29,11 +45,11 @@ serve(async (req) => {
   }
 
   const authHeader = req.headers.get("authorization") ?? "";
-  const providedToken = authHeader.startsWith("Bearer ")
-    ? authHeader.slice(7).trim()
-    : "";
+  const bearerToken = authHeader.startsWith("Bearer ") ? authHeader.slice(7).trim() : "";
+  const ingestToken = (req.headers.get("x-ingest-token") ?? "").trim();
+  const providedToken = ingestToken || bearerToken;
 
-  if (!providedToken || providedToken !== token) {
+  if (!providedToken || providedToken !== expectedToken) {
     return new Response(JSON.stringify({ error: "Unauthorized" }), {
       status: 401,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
@@ -58,34 +74,54 @@ serve(async (req) => {
     }
 
     const {
-      nome, municipio, descricao, telefone, email,
+      nome, municipio, telefone, email,
       tema_ids, tema_nomes, external_id,
     } = parsed.data;
 
-    const supabase = createClient(
-      Deno.env.get("SUPABASE_URL")!,
-      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
-    );
+    const descricao = (parsed.data.descricao ?? parsed.data.sugestao ?? "").trim();
+    if (!descricao) {
+      return new Response(
+        JSON.stringify({ error: "Validation failed", details: { sugestao: ["Campo obrigatório"] } }),
+        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } },
+      );
+    }
 
-    // Idempotency: if external_id provided, check for existing suggestion
-    // by matching descricao + whatsapp within the last hour.
-    if (external_id || telefone) {
+    // Idempotency by external_id -> 409
+    if (external_id) {
+      const { data: byExternal } = await supabase
+        .from("sugestoes_populares")
+        .select("id")
+        .eq("external_id", external_id)
+        .limit(1)
+        .maybeSingle();
+
+      if (byExternal) {
+        return new Response(
+          JSON.stringify({ error: "already_processed", sugestao_id: byExternal.id }),
+          { status: 409, headers: { ...corsHeaders, "Content-Type": "application/json" } },
+        );
+      }
+    }
+
+    // Secondary dedupe: same text + phone within the last hour
+    if (telefone) {
       const { data: existing } = await supabase
         .from("sugestoes_populares")
         .select("id")
         .eq("descricao", descricao)
-        .filter("whatsapp", "eq", telefone ?? "")
+        .eq("whatsapp", telefone)
         .gte("created_at", new Date(Date.now() - 60 * 60 * 1000).toISOString())
         .limit(1)
         .maybeSingle();
 
       if (existing) {
         return new Response(
-          JSON.stringify({ ok: true, sugestao_id: existing.id, duplicate: true }),
-          { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } },
+          JSON.stringify({ error: "already_processed", sugestao_id: existing.id, duplicate: true }),
+          { status: 409, headers: { ...corsHeaders, "Content-Type": "application/json" } },
         );
       }
     }
+
 
     // Resolve tema_ids from tema_nomes if not provided
     let resolvedTemaIds: string[] | null = tema_ids && tema_ids.length > 0 ? tema_ids : null;
@@ -132,6 +168,8 @@ serve(async (req) => {
         eixo: eixoName,
         descricao,
         publico: true,
+        external_id: external_id || null,
+
         tema_ids: resolvedTemaIds,
         origem: "whatsapp",
       })

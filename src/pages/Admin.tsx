@@ -24,7 +24,8 @@ import {
   Building2,
   BookOpen,
   Zap,
-  Network
+  Network,
+  MessageCircle
 } from 'lucide-react';
 
 const Admin = () => {
@@ -104,8 +105,16 @@ const Admin = () => {
       color: 'accent',
       roles: ['admin', 'curador_municipal']
     },
-    { 
-      icon: Target, 
+    {
+      icon: MessageCircle,
+      title: 'Integração WhatsApp',
+      description: 'Endpoint e token para o fornecedor homologado',
+      href: '/admin/whatsapp',
+      color: 'primary',
+      roles: ['admin', 'admin_master']
+    },
+    {
+      icon: Target,
       title: 'Eixos Temáticos', 
       description: 'Gerenciar os 5 eixos temáticos',
       href: '/admin/eixos',
