@@ -168,6 +168,8 @@ serve(async (req) => {
         eixo: eixoName,
         descricao,
         publico: true,
+        external_id: external_id || null,
+
         tema_ids: resolvedTemaIds,
         origem: "whatsapp",
       })
