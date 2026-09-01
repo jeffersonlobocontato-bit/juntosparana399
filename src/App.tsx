@@ -11,6 +11,7 @@ import Admin from "./pages/Admin";
 import AdminPropostas from "./pages/AdminPropostas";
 import AdminPropostasPoliticas from "./pages/AdminPropostasPoliticas";
 import AdminSugestoes from "./pages/AdminSugestoes";
+import AdminWhatsApp from "./pages/AdminWhatsApp";
 import AdminEixos from "./pages/AdminEixos";
 import AdminMunicipios from "./pages/AdminMunicipios";
 import AdminUsuarios from "./pages/AdminUsuarios";
