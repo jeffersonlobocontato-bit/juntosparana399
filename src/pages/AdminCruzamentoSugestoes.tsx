@@ -6,7 +6,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { ArrowLeft, RefreshCw, Network, MapPin, Layers, Building2 } from 'lucide-react';
+import { ArrowLeft, RefreshCw, Network, MapPin, Layers, Building2, MessageCircle } from 'lucide-react';
 import GeneroPanel, { useGeneroPorRegiao } from '@/components/admin/GeneroPanel';
 import CruzamentoTerritorialChat from '@/components/admin/CruzamentoTerritorialChat';
 import MarketingIAChat from '@/components/admin/MarketingIAChat';
@@ -45,6 +45,18 @@ export default function AdminCruzamentoSugestoes() {
   const [temaAberto, setTemaAberto] = useState<string | null>(null);
 
   const authorized = !!user && (isAdmin || roles.includes('lider_tematico' as any));
+
+  // Origem counts (LP vs WhatsApp)
+  const origemCounts = useQuery({
+    queryKey: ['pc-origem'],
+    queryFn: async () => {
+      const { count: wa } = await db.from('sugestoes_populares').select('*', { count: 'exact', head: true }).eq('origem', 'whatsapp');
+      const { count: total } = await db.from('sugestoes_populares').select('*', { count: 'exact', head: true });
+      return { whatsapp: wa ?? 0, total: total ?? 0 };
+    },
+    enabled: authorized,
+    refetchInterval: 30_000,
+  });
 
   const resumo = useQuery({
     queryKey: ['pc-resumo'],
@@ -265,19 +277,20 @@ export default function AdminCruzamentoSugestoes() {
         />
 
         {/* Hero counters */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
           {[
-            { label: 'Sugestões', value: totals?.total_sugestoes, icon: Layers },
-            { label: 'Municípios do PR', value: totals?.total_municipios, icon: Building2 },
-            { label: 'Mesorregiões', value: totals?.total_regioes, icon: MapPin },
-            { label: 'Eixos', value: totals?.total_eixos, icon: Network },
+            { label: 'Sugestões', value: totals?.total_sugestoes, icon: Layers, color: NAVY },
+            { label: 'Municípios do PR', value: totals?.total_municipios, icon: Building2, color: NAVY },
+            { label: 'Mesorregiões', value: totals?.total_regioes, icon: MapPin, color: NAVY },
+            { label: 'Eixos', value: totals?.total_eixos, icon: Network, color: NAVY },
+            { label: 'WhatsApp', value: origemCounts.data?.whatsapp, icon: MessageCircle, color: '#25D366' },
           ].map(item => (
-            <Card key={item.label} className="border-l-4" style={{ borderLeftColor: RED }}>
+            <Card key={item.label} className="border-l-4" style={{ borderLeftColor: item.color }}>
               <CardContent className="p-4">
                 <div className="flex items-center gap-2 text-muted-foreground text-xs uppercase tracking-wide">
                   <item.icon className="w-4 h-4" />{item.label}
                 </div>
-                <p className="text-3xl font-bold mt-1" style={{ color: NAVY }}>
+                <p className="text-3xl font-bold mt-1" style={{ color: item.color }}>
                   {Number(item.value ?? 0).toLocaleString('pt-BR')}
                 </p>
               </CardContent>

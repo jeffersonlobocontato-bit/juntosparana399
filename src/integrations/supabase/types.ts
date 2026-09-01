@@ -1820,6 +1820,7 @@ export type Database = {
           id: string
           municipio: string
           nome: string | null
+          origem: string
           publico: boolean | null
           tema_id: string | null
           tema_ids: Json | null
@@ -1834,6 +1835,7 @@ export type Database = {
           id?: string
           municipio: string
           nome?: string | null
+          origem?: string
           publico?: boolean | null
           tema_id?: string | null
           tema_ids?: Json | null
@@ -1848,6 +1850,7 @@ export type Database = {
           id?: string
           municipio?: string
           nome?: string | null
+          origem?: string
           publico?: boolean | null
           tema_id?: string | null
           tema_ids?: Json | null
@@ -2678,28 +2681,53 @@ export type Database = {
           total: number
         }[]
       }
-      painel_cruzamento_lista_sugestoes: {
-        Args: {
-          p_eixo?: string
-          p_genero?: string
-          p_limit?: number
-          p_municipio?: string
-          p_offset?: number
-          p_regiao?: string
-        }
-        Returns: {
-          created_at: string
-          descricao: string
-          eixo: string
-          genero: string
-          id: string
-          latitude: number
-          longitude: number
-          mesorregiao: string
-          municipio: string
-          nome: string
-        }[]
-      }
+      painel_cruzamento_lista_sugestoes:
+        | {
+            Args: {
+              p_eixo?: string
+              p_genero?: string
+              p_limit?: number
+              p_municipio?: string
+              p_offset?: number
+              p_regiao?: string
+            }
+            Returns: {
+              created_at: string
+              descricao: string
+              eixo: string
+              genero: string
+              id: string
+              latitude: number
+              longitude: number
+              mesorregiao: string
+              municipio: string
+              nome: string
+            }[]
+          }
+        | {
+            Args: {
+              p_eixo?: string
+              p_genero?: string
+              p_limit?: number
+              p_municipio?: string
+              p_offset?: number
+              p_origem?: string
+              p_regiao?: string
+            }
+            Returns: {
+              created_at: string
+              descricao: string
+              eixo: string
+              genero: string
+              id: string
+              latitude: number
+              longitude: number
+              mesorregiao: string
+              municipio: string
+              nome: string
+              origem: string
+            }[]
+          }
       painel_cruzamento_nuvem_palavras: {
         Args: { p_limit?: number }
         Returns: {

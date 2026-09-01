@@ -65,6 +65,7 @@ interface Sugestao {
   created_at: string;
   tema_ids: any;
   analise_semantica: any;
+  origem?: string | null;
 }
 
 interface Municipio {
@@ -105,6 +106,7 @@ const AdminSugestoes = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterEixo, setFilterEixo] = useState<string>('all');
+  const [filterOrigem, setFilterOrigem] = useState<string>('all');
   
   // View dialog
   const [viewingSugestao, setViewingSugestao] = useState<Sugestao | null>(null);
@@ -178,13 +180,14 @@ const AdminSugestoes = () => {
   };
 
   const handleExportCSV = () => {
-    const headers = ['Nome', 'Email', 'WhatsApp', 'Município', 'Eixo', 'Descrição', 'Data'];
+    const headers = ['Nome', 'Email', 'WhatsApp', 'Município', 'Eixo', 'Origem', 'Descrição', 'Data'];
     const rows = filteredSugestoes.map(s => [
       s.nome || '',
       s.email || '',
       s.whatsapp || '',
       s.municipio,
       s.eixo,
+      s.origem === 'whatsapp' ? 'WhatsApp' : 'LP',
       s.descricao.replace(/"/g, '""'),
       new Date(s.created_at).toLocaleDateString('pt-BR')
     ]);
@@ -242,7 +245,8 @@ const AdminSugestoes = () => {
       s.municipio.toLowerCase().includes(searchTerm.toLowerCase()) ||
       s.descricao.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesEixo = filterEixo === 'all' || s.eixo === filterEixo;
-    return matchesSearch && matchesEixo;
+    const matchesOrigem = filterOrigem === 'all' || (s.origem || 'lp') === filterOrigem;
+    return matchesSearch && matchesEixo && matchesOrigem;
   });
 
   const countByEixo = (eixo: string) => sugestoes.filter(s => s.eixo === eixo).length;
@@ -403,6 +407,16 @@ const AdminSugestoes = () => {
                     <SelectItem value="Não classificado">Não classificado</SelectItem>
                   </SelectContent>
                 </Select>
+                <Select value={filterOrigem} onValueChange={setFilterOrigem}>
+                  <SelectTrigger className="w-full md:w-[180px]">
+                    <SelectValue placeholder="Origem" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">Todas as origens</SelectItem>
+                    <SelectItem value="lp">LP (Site)</SelectItem>
+                    <SelectItem value="whatsapp">WhatsApp</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
             </CardContent>
           </Card>
@@ -439,6 +453,7 @@ const AdminSugestoes = () => {
                         <TableHead>Nome</TableHead>
                         <TableHead>Município</TableHead>
                         <TableHead>Eixo</TableHead>
+                        <TableHead>Origem</TableHead>
                         <TableHead>Prévia</TableHead>
                         <TableHead>Data</TableHead>
                         <TableHead className="text-right">Ações</TableHead>
@@ -455,6 +470,17 @@ const AdminSugestoes = () => {
                             <Badge className={`text-xs ${getEixoColors(sugestao.eixo).bg} ${getEixoColors(sugestao.eixo).text} hover:opacity-90`}>
                               {sugestao.eixo}
                             </Badge>
+                          </TableCell>
+                          <TableCell>
+                            {sugestao.origem === 'whatsapp' ? (
+                              <Badge variant="outline" className="text-xs bg-green-50 text-green-700 border-green-300">
+                                WhatsApp
+                              </Badge>
+                            ) : (
+                              <Badge variant="outline" className="text-xs bg-blue-50 text-blue-700 border-blue-300">
+                                LP
+                              </Badge>
+                            )}
                           </TableCell>
                           <TableCell className="max-w-[200px] truncate text-muted-foreground">
                             {sugestao.descricao}

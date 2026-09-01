@@ -59,3 +59,6 @@ verify_jwt = false
 
 [functions.agente-marketing-eleitoral]
 verify_jwt = false
+
+[functions.whatsapp-suggestion-webhook]
+verify_jwt = false
