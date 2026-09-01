@@ -65,6 +65,7 @@ interface Sugestao {
   created_at: string;
   tema_ids: any;
   analise_semantica: any;
+  origem?: string | null;
 }
 
 interface Municipio {
