@@ -106,6 +106,7 @@ const AdminSugestoes = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterEixo, setFilterEixo] = useState<string>('all');
+  const [filterOrigem, setFilterOrigem] = useState<string>('all');
   
   // View dialog
   const [viewingSugestao, setViewingSugestao] = useState<Sugestao | null>(null);
