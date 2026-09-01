@@ -46,6 +46,18 @@ export default function AdminCruzamentoSugestoes() {
 
   const authorized = !!user && (isAdmin || roles.includes('lider_tematico' as any));
 
+  // Origem counts (LP vs WhatsApp)
+  const origemCounts = useQuery({
+    queryKey: ['pc-origem'],
+    queryFn: async () => {
+      const { count: wa } = await db.from('sugestoes_populares').select('*', { count: 'exact', head: true }).eq('origem', 'whatsapp');
+      const { count: total } = await db.from('sugestoes_populares').select('*', { count: 'exact', head: true });
+      return { whatsapp: wa ?? 0, total: total ?? 0 };
+    },
+    enabled: authorized,
+    refetchInterval: 30_000,
+  });
+
   const resumo = useQuery({
     queryKey: ['pc-resumo'],
     queryFn: () => rpc<any>('painel_cruzamento_resumo'),
