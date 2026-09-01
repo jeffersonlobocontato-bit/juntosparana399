@@ -1,65 +1,72 @@
-# Integração WhatsApp para sugestões populares
+# Integração WhatsApp para sugestões populares (webhook do fornecedor)
 
-Objetivo: além do formulário da LP, permitir que qualquer pessoa envie sugestões por WhatsApp (texto ou áudio), gravando na mesma base usada hoje.
+## Como funciona
 
-## Como vai funcionar (visão do cidadão)
+O fornecedor (BSP/provedor de WhatsApp) cuida de toda a conversa com o cidadão: boas-vindas, perguntas, transcrição de áudio e extração dos dados. Quando a sugestão está completa, ele chama um webhook nosso com o JSON pronto. A gente valida o token, grava na base de sugestões e dispara a mesma classificação semântica que já usamos na LP.
 
-1. A pessoa manda mensagem para o número oficial do Juntos Paraná 399.
-2. Se for áudio, o áudio é transcrito automaticamente.
-3. A IA lê a mensagem e tenta identificar município, tema(s) e o conteúdo da sugestão.
-4. O bot pergunta apenas o que ficou faltando (ex.: "Qual sua cidade?" ou "Qual seu nome?").
-5. Ao completar, a sugestão é gravada e a pessoa recebe uma confirmação com agradecimento e link para ver o mapa.
+```
+[Cidadão] → WhatsApp → [Fornecedor] → webhook + token → [Edge Function] → sugestoes_populares
+                                                                    ↓
+                                              analyze-suggestion + classify-suggestion-eixo
+```
 
-Fluxo híbrido: texto livre + IA, com perguntas só para os campos ausentes. Sessão da conversa expira em 24h de inatividade.
-
-## O que você precisa providenciar (pré-requisitos Meta)
-
-Esta parte é feita por você no Meta, eu não consigo criar:
-
-1. Conta no **Meta Business Manager** verificada.
-2. App no **Meta for Developers** com o produto **WhatsApp** adicionado.
-3. Um **número de telefone dedicado** (não pode estar em uso no app WhatsApp comum) registrado no WhatsApp Business Platform.
-4. Anotar: `Phone Number ID`, `WhatsApp Business Account ID` e gerar um **token permanente** (System User Token com permissões `whatsapp_business_messaging` e `whatsapp_business_management`).
-5. Depois que eu criar o webhook, você cola a URL dele no painel do app Meta e assina o evento `messages`.
-
-Vou pedir esses valores como segredos: `WHATSAPP_TOKEN`, `WHATSAPP_PHONE_NUMBER_ID`, `WHATSAPP_VERIFY_TOKEN`.
+Nada de bot, sessão, transcrição ou envio de mensagens do nosso lado — o fornecedor é a porta de entrada.
 
 ## O que eu vou construir
 
-### Backend
+### 1. Banco (migração)
 
-- **Nova função `whatsapp-webhook`** (pública, `verify_jwt = false`):
-  - `GET`: responde ao handshake de verificação da Meta (`hub.challenge`) validando o `WHATSAPP_VERIFY_TOKEN`.
-  - `POST`: valida a assinatura `X-Hub-Signature-256` (HMAC com o app secret) e processa mensagens recebidas.
-  - Trata tipos `text` e `audio`; ignora status callbacks e outros tipos com resposta amigável.
-  - Áudio: baixa a mídia pela Graph API e transcreve reaproveitando a lógica já existente em `transcribe-audio`.
-  - Extração via IA (Gemini pelo AI Gateway) devolvendo JSON estrito com `nome`, `municipio`, `tema_ids`, `descricao` e `faltando[]`, usando as listas reais de `municipios`, `eixos_tematicos` e `temas` do banco.
-  - Perguntas de complemento apenas para os campos em `faltando`.
-  - Grava em `sugestoes_populares` com `origem = 'whatsapp'`, `whatsapp` = telefone do remetente, e dispara `analyze-suggestion` / `classify-suggestion-eixo` como já acontece na LP.
-  - Envia respostas via Graph API `POST /{phone_number_id}/messages`.
+- Coluna `origem` em `sugestoes_populares` (`text`, default `'lp'`), com backfill dos registros atuais como `'lp'`.
+- Sem novas tabelas — o fornecedor não precisa de sessão nem log do nosso lado.
 
-### Banco
+### 2. Segredos
 
-- Nova tabela `whatsapp_sessions` (telefone, estado parcial em JSONB, `updated_at`), RLS fechada a admins + GRANTs para `service_role`; a função acessa com service role.
-- Nova tabela `whatsapp_inbound_log` para deduplicação por `message_id` (a Meta reenvia webhooks).
-- Coluna `origem` em `sugestoes_populares` (`'lp' | 'whatsapp'`), default `'lp'`, backfill dos registros atuais como `'lp'`.
+- `WHATSAPP_WEBHOOK_TOKEN` — token secreto que nós geramos e entregamos ao fornecedor. Ele envia no header `Authorization: Bearer <token>` a cada chamada. A edge function rejeita qualquer chamada sem o token válido.
 
-### Painel
+### 3. Edge Function `whatsapp-suggestion-webhook`
 
-- Badge "WhatsApp" na listagem de sugestões (`AdminSugestoes.tsx`) e filtro por origem.
-- Filtro de origem no Painel de Cruzamento, mantendo "Todas" como padrão.
+- `verify_jwt = false` (chamada externa, sem usuário Supabase).
+- `OPTIONS` → CORS.
+- `POST` → valida `Authorization: Bearer <token>` contra `WHATSAPP_WEBHOOK_TOKEN`; rejeita com 401 se divergir.
+- Valida o corpo com Zod:
+  ```json
+  {
+    "nome": "string | null",
+    "municipio": "string (obrigatório)",
+    "descricao": "string (obrigatório)",
+    "telefone": "string | null",
+    "email": "string | null",
+    "tema_ids": "string[] (opcional)",
+    "tema_nomes": "string[] (opcional — fallback se não mandar IDs)"
+  }
+  ```
+- Resolve `municipio` (texto) → `municipios.id` por nome; se não achar, grava o texto mesmo assim.
+- Se `tema_ids` não vier, tenta casar `tema_nomes` contra a tabela `temas`; se nada casar, deixa `tema_ids = null` e a IA classifica depois.
+- Grava em `sugestoes_populares` com `origem = 'whatsapp'`, `whatsapp = telefone`, `publico = true`.
+- Dispara em fire-and-forget `analyze-suggestion` e `classify-suggestion-eixo` (mesmo fluxo da LP).
+- Retorna `{ ok: true, sugestao_id }` para o fornecedor.
+- Idempotência: se o fornecedor enviar um `external_id` (opcional), a função verifica se já existe sugestão com esse `metadata.external_id` e retorna `200` sem duplicar.
 
-## Riscos e limites
+### 4. Painel
 
-- Só é possível responder livremente dentro da janela de 24h após a mensagem do usuário — como o cidadão sempre inicia a conversa, isso atende o caso.
-- Número de teste da Meta só envia para até 5 destinatários cadastrados; o número de produção exige a verificação do negócio.
-- LGPD: o primeiro retorno do bot informa que a mensagem será usada como contribuição pública e traz o link da política de privacidade.
+- Badge "WhatsApp" na tabela de `AdminSugestoes.tsx` (ao lado do nome, quando `origem === 'whatsapp'`).
+- Filtro de origem no seletor de eixos: `Todas | LP | WhatsApp`.
+- Filtro de origem também no Painel de Cruzamento (`AdminCruzamentoSugestoes.tsx`), mantendo "Todas" como padrão.
+- Export CSV inclui coluna "Origem".
+
+### 5. Entrega ao fornecedor
+
+Depois de pronto, eu forneço ao fornecedor:
+- URL do webhook: `https://ckgmdsdoywkncduigdkk.supabase.co/functions/v1/whatsapp-suggestion-webhook`
+- Header: `Authorization: Bearer <token>`
+- Método: `POST`, `Content-Type: application/json`
+- Esquema do corpo (o JSON acima)
 
 ## Ordem de execução
 
-1. Migração de banco (tabelas + coluna origem).
-2. Segredos do WhatsApp.
-3. Função `whatsapp-webhook` + envio de mensagens.
-4. Extração por IA e transcrição de áudio.
-5. Ajustes de badge/filtro no painel.
-6. Você cadastra a URL do webhook no Meta e fazemos um teste ponta a ponta.
+1. Migração (coluna `origem` + backfill).
+2. Gerar `WHATSAPP_WEBHOOK_TOKEN` via `add_secret`.
+3. Criar e publicar a edge function `whatsapp-suggestion-webhook`.
+4. Badge + filtro no `AdminSugestoes.tsx` e no `AdminCruzamentoSugestoes.tsx`.
+5. Testar o webhook com um payload de exemplo.
+6. Entregar URL + token + esquema ao fornecedor.
