@@ -180,13 +180,14 @@ const AdminSugestoes = () => {
   };
 
   const handleExportCSV = () => {
-    const headers = ['Nome', 'Email', 'WhatsApp', 'Município', 'Eixo', 'Descrição', 'Data'];
+    const headers = ['Nome', 'Email', 'WhatsApp', 'Município', 'Eixo', 'Origem', 'Descrição', 'Data'];
     const rows = filteredSugestoes.map(s => [
       s.nome || '',
       s.email || '',
       s.whatsapp || '',
       s.municipio,
       s.eixo,
+      s.origem === 'whatsapp' ? 'WhatsApp' : 'LP',
       s.descricao.replace(/"/g, '""'),
       new Date(s.created_at).toLocaleDateString('pt-BR')
     ]);
