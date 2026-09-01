@@ -43,6 +43,7 @@ interface SugestaoLista {
   latitude: number | null;
   longitude: number | null;
   created_at: string;
+  origem?: string;
 }
 
 function ExpandHint({ children }: { children: React.ReactNode }) {
