@@ -407,6 +407,16 @@ const AdminSugestoes = () => {
                     <SelectItem value="Não classificado">Não classificado</SelectItem>
                   </SelectContent>
                 </Select>
+                <Select value={filterOrigem} onValueChange={setFilterOrigem}>
+                  <SelectTrigger className="w-full md:w-[180px]">
+                    <SelectValue placeholder="Origem" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">Todas as origens</SelectItem>
+                    <SelectItem value="lp">LP (Site)</SelectItem>
+                    <SelectItem value="whatsapp">WhatsApp</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
             </CardContent>
           </Card>
@@ -443,6 +453,7 @@ const AdminSugestoes = () => {
                         <TableHead>Nome</TableHead>
                         <TableHead>Município</TableHead>
                         <TableHead>Eixo</TableHead>
+                        <TableHead>Origem</TableHead>
                         <TableHead>Prévia</TableHead>
                         <TableHead>Data</TableHead>
                         <TableHead className="text-right">Ações</TableHead>
@@ -459,6 +470,17 @@ const AdminSugestoes = () => {
                             <Badge className={`text-xs ${getEixoColors(sugestao.eixo).bg} ${getEixoColors(sugestao.eixo).text} hover:opacity-90`}>
                               {sugestao.eixo}
                             </Badge>
+                          </TableCell>
+                          <TableCell>
+                            {sugestao.origem === 'whatsapp' ? (
+                              <Badge variant="outline" className="text-xs bg-green-50 text-green-700 border-green-300">
+                                WhatsApp
+                              </Badge>
+                            ) : (
+                              <Badge variant="outline" className="text-xs bg-blue-50 text-blue-700 border-blue-300">
+                                LP
+                              </Badge>
+                            )}
                           </TableCell>
                           <TableCell className="max-w-[200px] truncate text-muted-foreground">
                             {sugestao.descricao}
