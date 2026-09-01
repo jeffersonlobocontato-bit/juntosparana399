@@ -24,7 +24,8 @@ import {
   Building2,
   BookOpen,
   Zap,
-  Network
+  Network,
+  MessageCircle
 } from 'lucide-react';
 
 const Admin = () => {
