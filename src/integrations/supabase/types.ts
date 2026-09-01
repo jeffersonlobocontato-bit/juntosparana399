@@ -1820,6 +1820,7 @@ export type Database = {
           id: string
           municipio: string
           nome: string | null
+          origem: string
           publico: boolean | null
           tema_id: string | null
           tema_ids: Json | null
@@ -1834,6 +1835,7 @@ export type Database = {
           id?: string
           municipio: string
           nome?: string | null
+          origem?: string
           publico?: boolean | null
           tema_id?: string | null
           tema_ids?: Json | null
@@ -1848,6 +1850,7 @@ export type Database = {
           id?: string
           municipio?: string
           nome?: string | null
+          origem?: string
           publico?: boolean | null
           tema_id?: string | null
           tema_ids?: Json | null
