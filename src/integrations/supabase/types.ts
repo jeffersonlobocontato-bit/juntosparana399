@@ -1817,6 +1817,7 @@ export type Database = {
           descricao: string
           eixo: string
           email: string | null
+          external_id: string | null
           id: string
           municipio: string
           nome: string | null
@@ -1832,6 +1833,7 @@ export type Database = {
           descricao: string
           eixo: string
           email?: string | null
+          external_id?: string | null
           id?: string
           municipio: string
           nome?: string | null
@@ -1847,6 +1849,7 @@ export type Database = {
           descricao?: string
           eixo?: string
           email?: string | null
+          external_id?: string | null
           id?: string
           municipio?: string
           nome?: string | null
@@ -2524,6 +2527,27 @@ export type Database = {
         }
         Relationships: []
       }
+      whatsapp_ingest_config: {
+        Row: {
+          created_at: string
+          id: string
+          token: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          token: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          token?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       sugestoes_publicas: {
@@ -2856,6 +2880,7 @@ export type Database = {
           vinculos: number
         }[]
       }
+      regenerate_whatsapp_token: { Args: never; Returns: string }
       unaccent: { Args: { "": string }; Returns: string }
     }
     Enums: {
