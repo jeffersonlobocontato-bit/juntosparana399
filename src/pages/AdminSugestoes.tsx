@@ -244,7 +244,8 @@ const AdminSugestoes = () => {
       s.municipio.toLowerCase().includes(searchTerm.toLowerCase()) ||
       s.descricao.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesEixo = filterEixo === 'all' || s.eixo === filterEixo;
-    return matchesSearch && matchesEixo;
+    const matchesOrigem = filterOrigem === 'all' || (s.origem || 'lp') === filterOrigem;
+    return matchesSearch && matchesEixo && matchesOrigem;
   });
 
   const countByEixo = (eixo: string) => sugestoes.filter(s => s.eixo === eixo).length;
