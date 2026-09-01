@@ -6,7 +6,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { ArrowLeft, RefreshCw, Network, MapPin, Layers, Building2 } from 'lucide-react';
+import { ArrowLeft, RefreshCw, Network, MapPin, Layers, Building2, MessageCircle } from 'lucide-react';
 import GeneroPanel, { useGeneroPorRegiao } from '@/components/admin/GeneroPanel';
 import CruzamentoTerritorialChat from '@/components/admin/CruzamentoTerritorialChat';
 import MarketingIAChat from '@/components/admin/MarketingIAChat';
