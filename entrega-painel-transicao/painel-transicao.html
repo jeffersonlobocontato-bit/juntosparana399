@@ -1,0 +1,603 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<style>[hidden]{display:none!important}img{max-width:100%}</style>
+<title>Painel da Transição</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;700&family=Source+Serif+4:opsz,wght@8..60,600;8..60,700&display=swap">
+<style>
+/* Layout: barra superior fixa, abas, painel central com matriz secretarias x blocos do relatório */
+:root{
+  --bg:#f3f5f8; --bg-img:none; --surface:#ffffff; --ink:#14202e; --ink2:#4a586a; --muted:#7a8696; --line:#dde3ea;
+  --accent:#1b4f8f; --accent-ink:#ffffff; --accent-soft:#e3edf8;
+  --s-none-bg:#eef1f5; --s-none-fg:#7a8696;
+  --s-req-bg:#dbe8f7; --s-req-fg:#1b4f8f;
+  --s-part-bg:#fbe9c2; --s-part-fg:#7a4a00;
+  --s-del-bg:#cfeadb; --s-del-fg:#14633f;
+  --s-val-bg:#14633f; --s-val-fg:#ffffff;
+  --s-late-bg:#f8d4d0; --s-late-fg:#a11d12;
+  --crit:#a11d12; --high:#b25e00; --mod:#4a586a;
+  --f-display:"Source Serif 4",Georgia,serif; --f-body:"Public Sans",system-ui,sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#061b2e; --bg-img:linear-gradient(180deg,#0c2d4f 0,#061b2e 420px); --surface:#0c2d4f; --ink:#e3f3ff; --ink2:#b0cce2; --muted:#8eb4d4; --line:#1d4a78;
+  --accent:#33b7ef; --accent-ink:#061b2e; --accent-soft:#033a68;
+  --s-none-bg:#102c63; --s-none-fg:#a9c4de;
+  --s-req-bg:#034c8c; --s-req-fg:#b4edff;
+  --s-part-bg:#4a3a12; --s-part-fg:#f3cf7a;
+  --s-del-bg:#1b4333; --s-del-fg:#8fd9b0;
+  --s-val-bg:#3a9c6c; --s-val-fg:#06150e;
+  --s-late-bg:#5a201b; --s-late-fg:#ffb3aa;
+  --crit:#ff9a8f; --high:#f0a64d; --mod:#b0cce2; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#061b2e; --bg-img:linear-gradient(180deg,#0c2d4f 0,#061b2e 420px); --surface:#0c2d4f; --ink:#e3f3ff; --ink2:#b0cce2; --muted:#8eb4d4; --line:#1d4a78;
+  --accent:#33b7ef; --accent-ink:#061b2e; --accent-soft:#033a68;
+  --s-none-bg:#102c63; --s-none-fg:#a9c4de;
+  --s-req-bg:#034c8c; --s-req-fg:#b4edff;
+  --s-part-bg:#4a3a12; --s-part-fg:#f3cf7a;
+  --s-del-bg:#1b4333; --s-del-fg:#8fd9b0;
+  --s-val-bg:#3a9c6c; --s-val-fg:#06150e;
+  --s-late-bg:#5a201b; --s-late-fg:#ffb3aa;
+  --crit:#ff9a8f; --high:#f0a64d; --mod:#b0cce2; color-scheme:dark}
+*{box-sizing:border-box}
+body{background-color:var(--bg);background-image:var(--bg-img);background-repeat:no-repeat;color:var(--ink);font-family:var(--f-body);font-size:14px;line-height:1.45;margin:0;padding-inline:16px;padding-block:0 48px}
+.wrap{max-width:1200px;margin-inline:auto}
+header.top{display:flex;flex-wrap:wrap;gap:12px 24px;align-items:center;justify-content:space-between;padding-block:18px 10px}
+.brand{display:flex;flex-direction:column;gap:2px;min-width:0}
+.brand b{font-family:var(--f-display);font-size:24px;letter-spacing:-.01em}
+.brand span{color:var(--ink2);font-size:12.5px}
+.who{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.chip{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:999px;background:var(--accent-soft);color:var(--accent);font-weight:600;font-size:12px}
+.chip.ghost{background:transparent;border:1px solid var(--line);color:var(--ink2);font-weight:500}
+nav.tabs{display:flex;gap:4px;overflow-x:auto;border-bottom:1px solid var(--line);margin-bottom:20px}
+nav.tabs button{background:none;border:0;border-bottom:3px solid transparent;color:var(--ink2);padding:10px 14px;font:600 14px var(--f-body);cursor:pointer;white-space:nowrap}
+nav.tabs button[aria-selected="true"]{color:var(--accent);border-color:var(--accent)}
+button:focus-visible,select:focus-visible,input:focus-visible,textarea:focus-visible,td[tabindex]:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.demo{background:var(--s-part-bg);color:var(--s-part-fg);padding:8px 12px;border-radius:6px;font-size:12.5px;margin-bottom:16px}
+h2{font-family:var(--f-display);font-size:20px;margin:0 0 4px}
+h3{font-size:13px;text-transform:uppercase;letter-spacing:.06em;color:var(--ink2);margin:0 0 10px}
+.sub{color:var(--ink2);margin:0 0 14px;max-width:70ch}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:16px;min-width:0}
+.grid{display:grid;gap:16px}
+.kpis{grid-template-columns:repeat(auto-fit,minmax(150px,1fr))}
+.kpi{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:12px 14px}
+.kpi .n{font-family:var(--f-display);font-size:30px;font-weight:700;line-height:1.1;font-variant-numeric:tabular-nums}
+.kpi .l{color:var(--ink2);font-size:12.5px}
+.kpi.bad .n{color:var(--crit)}
+.countdown{display:flex;flex-wrap:wrap;gap:16px 32px;align-items:center}
+.countdown .big{font-family:var(--f-display);font-size:44px;font-weight:700;line-height:1;font-variant-numeric:tabular-nums}
+.phases{display:flex;gap:6px;flex:1;min-width:280px;overflow-x:auto;padding-bottom:4px}
+.ph{flex:1;min-width:104px;border-top:4px solid var(--line);padding-top:6px;font-size:12px;color:var(--muted)}
+.ph b{display:block;color:var(--ink2);font-size:12.5px}
+.ph.done{border-color:var(--s-val-bg)}
+.ph.now{border-color:var(--accent)}
+.ph.now b{color:var(--accent)}
+.twoCol{grid-template-columns:minmax(0,2fr) minmax(0,1fr)}
+@media (max-width:900px){.twoCol{grid-template-columns:minmax(0,1fr)}}
+.scroll{overflow-x:auto}
+table{border-collapse:separate;border-spacing:0;width:100%}
+th,td{padding:8px 10px;text-align:left;border-bottom:1px solid var(--line);vertical-align:middle}
+th{font-size:12px;color:var(--ink2);font-weight:600;white-space:nowrap}
+.mx td.cell{padding:3px;text-align:center}
+.mx th.col{text-align:center;width:54px}
+.cellbtn{display:flex;align-items:center;justify-content:center;width:100%;min-width:42px;height:34px;border-radius:5px;border:2px solid transparent;font:700 14px var(--f-body);cursor:pointer}
+.cellbtn[aria-pressed="true"]{border-color:var(--ink)}
+.st-0{background:var(--s-none-bg);color:var(--s-none-fg)}
+.st-1{background:var(--s-req-bg);color:var(--s-req-fg)}
+.st-2{background:var(--s-part-bg);color:var(--s-part-fg)}
+.st-3{background:var(--s-del-bg);color:var(--s-del-fg)}
+.st-4{background:var(--s-val-bg);color:var(--s-val-fg)}
+.st-5{background:var(--s-late-bg);color:var(--s-late-fg)}
+.legend{display:flex;flex-wrap:wrap;gap:8px 16px;margin-top:12px;font-size:12.5px;color:var(--ink2)}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.sw{display:inline-flex;align-items:center;justify-content:center;width:22px;height:20px;border-radius:4px;font-weight:700;font-size:12px}
+.bar{height:8px;background:var(--s-none-bg);border-radius:4px;overflow:hidden;min-width:70px}
+.bar i{display:block;height:100%;background:var(--s-val-bg);border-radius:4px}
+.detail{margin-top:14px;padding:12px;border:1px dashed var(--line);border-radius:8px;display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center}
+.detail[hidden]{display:none}
+select,input,textarea{font:inherit;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:7px 9px;max-width:100%}
+textarea{width:100%;min-height:80px;resize:vertical}
+label.f{display:flex;flex-direction:column;gap:4px;font-size:12px;color:var(--ink2);font-weight:600;min-width:0}
+.btn{font:600 13px var(--f-body);border-radius:6px;border:1px solid var(--accent);background:var(--accent);color:var(--accent-ink);padding:7px 12px;cursor:pointer}
+.btn.sec{background:transparent;color:var(--accent)}
+.btn.sm{padding:4px 9px;font-size:12px}
+.pill{display:inline-flex;align-items:center;gap:5px;padding:2px 9px;border-radius:999px;font-size:12px;font-weight:700;white-space:nowrap}
+.pill.crit{background:var(--s-late-bg);color:var(--s-late-fg)}
+.pill.high{background:var(--s-part-bg);color:var(--s-part-fg)}
+.pill.mod{background:var(--s-none-bg);color:var(--s-none-fg)}
+.pill.ok{background:var(--s-del-bg);color:var(--s-del-fg)}
+.pill.late{background:var(--s-late-bg);color:var(--s-late-fg)}
+.pill.open{background:var(--s-req-bg);color:var(--s-req-fg)}
+.formrow{display:flex;flex-wrap:wrap;gap:12px;align-items:flex-end;margin-bottom:14px}
+.formrow .grow{flex:1;min-width:200px}
+.pend{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:10px}
+.pend li{display:flex;gap:10px;justify-content:space-between;align-items:flex-start;border-bottom:1px solid var(--line);padding-bottom:10px}
+.pend li:last-child{border:0;padding:0}
+.pend small{color:var(--ink2);display:block}
+details.blk{border:1px solid var(--line);border-radius:8px;margin-bottom:10px;background:var(--surface)}
+details.blk>summary{cursor:pointer;padding:12px 14px;font-weight:600;display:flex;gap:10px;align-items:center;justify-content:space-between;list-style:none}
+details.blk>summary::-webkit-details-marker{display:none}
+details.blk .inner{padding:0 14px 14px}
+td input{width:100%;min-width:90px}
+.note{color:var(--ink2);font-size:12.5px}
+.risk-score{font-family:var(--f-display);font-weight:700;font-size:18px;font-variant-numeric:tabular-nums}
+.files{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.files span{background:var(--accent-soft);color:var(--accent);padding:3px 9px;border-radius:5px;font-size:12px}
+.roles td:first-child{font-weight:600}
+.yes{color:var(--s-del-fg);font-weight:700}.no{color:var(--muted)}
+.gen{display:grid;grid-template-columns:minmax(0,420px) minmax(0,1fr);gap:16px;align-items:start}
+@media (max-width:980px){.gen{grid-template-columns:minmax(0,1fr)}}
+.gen .form{display:flex;flex-direction:column;gap:12px}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media (max-width:480px){.two{grid-template-columns:1fr}}
+.chk{display:flex;gap:8px;align-items:flex-start;font-size:13px;padding:4px 0;border-bottom:1px solid var(--line)}
+.chk input{margin-top:3px;flex:none}
+.paper{background:#ffffff;color:#1a1a1a;font-family:var(--f-display);font-size:15px;line-height:1.55;padding:40px 44px;border:1px solid var(--line);border-radius:4px;white-space:pre-wrap;min-height:560px;max-width:100%;overflow-wrap:anywhere;box-shadow:0 1px 3px rgba(0,0,0,.12)}
+@media (max-width:560px){.paper{padding:22px 18px}}
+.paper:focus{outline:2px solid var(--accent)}
+.warn{background:var(--s-part-bg);color:var(--s-part-fg);padding:8px 12px;border-radius:6px;font-size:12.5px}
+.okmsg{background:var(--s-del-bg);color:var(--s-del-fg);padding:8px 12px;border-radius:6px;font-size:12.5px}
+.actions{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px;align-items:center}
+@media (prefers-reduced-motion:no-preference){.bar i{transition:width .3s}}
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <div class="brand"><b>Painel da Transição</b><span>Governo do Paraná · mandato 2027–2030 · ambiente reservado</span></div>
+    <div class="who"><button class="btn sec sm" id="theme-btn" type="button" aria-pressed="false">◐ Fundo escuro</button><span class="chip ghost">Acesso em duas etapas ativo</span><span class="chip">Alcione Gomes · Administração</span></div>
+  </header>
+  <nav class="tabs" role="tablist" id="tabs">
+    <button role="tab" data-tab="dash" aria-selected="true">Painel geral</button>
+    <button role="tab" data-tab="of" aria-selected="false">Ofícios e prazos</button>
+    <button role="tab" data-tab="gen" aria-selected="false">Gerador de ofícios</button>
+    <button role="tab" data-tab="aut" aria-selected="false">Autoridades</button>
+    <button role="tab" data-tab="rel" aria-selected="false">Relatório da secretaria</button>
+    <button role="tab" data-tab="risk" aria-selected="false">Mapa de riscos</button>
+    <button role="tab" data-tab="team" aria-selected="false">Equipe e acessos</button>
+    <button role="tab" data-tab="conf" aria-selected="false">Conflito de interesses</button>
+  </nav>
+  <div class="demo">Protótipo para validação do desenho. Todos os nomes, números e datas abaixo são exemplos e nada é salvo.</div>
+  <main id="view"></main>
+</div>
+
+<script>
+const BLOCOS=["Estrutura e pessoas","Orçamento","Contratos e convênios","Obras e projetos","Passivos e riscos jurídicos","Sistemas e dados","Agenda dos 100 dias","Riscos imediatos"];
+const GRUPOS=["Fazenda","Planejamento e Administração","Previdência","Saúde","Educação","Segurança Pública","Infraestrutura e Logística","Agricultura e Meio Ambiente","Assistência Social e Desenvolvimento","Casa Civil, PGE e Controladoria","Estatais"];
+const ST=[
+ {k:"Não solicitado",i:"–"},{k:"Solicitado",i:"◔"},{k:"Parcial",i:"◑"},{k:"Entregue",i:"●"},{k:"Validado",i:"✓"},{k:"Não entregue no prazo",i:"!"}];
+const PONTOS={
+ "Riscos fiscais":["Despesa sem caixa nos últimos 8 meses","Aumento de despesa com pessoal (180 dias finais)","Nomeações e reajustes no período eleitoral","Operações de crédito no último ano de mandato","Caixa insuficiente em janeiro","Restos a pagar elevados","Receita superestimada na LOA 2027","Aportes da previdência subestimados","Incentivos fiscais novos sem estimativa"],
+ "Riscos contratuais e jurídicos":["Contratos essenciais vencendo","Contratos assinados às pressas","Obras paradas ou com medição adiantada","Passivos judiciais acima de R$ 10 milhões","Pendências de regularidade (CAUC)"],
+ "Riscos de pessoas e serviços":["Perda de conhecimento","Temporários sem contrato em fevereiro","Início do ano letivo","Serviços de saúde (estoque de medicamentos)","Segurança pública (viaturas, combustível, alimentação)"],
+ "Riscos de informação e sistemas":["Apagamento ou retenção de dados","Informação incompleta","Vazamento"],
+ "Riscos políticos e institucionais":["Transição tardia ou limitada","LOA votada sem ajustes","Nomeações para mandatos fixos","Expectativas públicas"]};
+const FASES=[["0 Preparação","antes da eleição"],["1 Instalação","semanas 1 e 2"],["2 Diagnóstico","semanas 2 a 6"],["3 Consolidação","semanas 6 a 8"],["4 Pré-posse","semanas 8 a 10"],["5 Cem dias","6/1 a 15/4"]];
+const FASE_ATUAL=1;
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const today=new Date();today.setHours(0,0,0,0);
+const addDays=(d,n)=>{const x=new Date(d);x.setDate(x.getDate()+n);return x};
+const addBiz=(d,n)=>{const x=new Date(d);while(n>0){x.setDate(x.getDate()+1);if(x.getDay()%6)n--}return x};
+const fmt=d=>d.toLocaleDateString("pt-BR",{day:"2-digit",month:"2-digit"});
+const fmtL=d=>d.toLocaleDateString("pt-BR",{day:"2-digit",month:"short",year:"numeric"});
+const POSSE=new Date(2027,0,6);
+const diasPosse=Math.max(0,Math.round((POSSE-today)/864e5));
+
+const matrix=GRUPOS.map((g,gi)=>BLOCOS.map((b,bi)=>(gi*5+bi*3+((gi*bi)%4))%6));
+const oficios=[
+ [3,"Fluxo de caixa diário de dezembro a março",8,"abertos"],
+ [3,"Estoque de medicamentos e insumos",8,"aberto"],
+ [0,"Restos a pagar por credor e data",9,"aberto"],
+ [0,"Estoque e serviço da dívida em 2027",6,"respondido"],
+ [4,"Contratos de transporte escolar e merenda",7,"aberto"],
+ [5,"Contratos de alimentação do sistema prisional",3,"aberto"],
+ [9,"Ações judiciais acima de R$ 10 milhões",4,"respondido"],
+ [2,"Cálculo atuarial e cronograma de aportes",2,"aberto"],
+ [6,"Obras paralisadas e motivos",1,"aberto"],
+ [1,"Concursos em andamento ou homologados",10,"respondido"]
+].map((o,i)=>{const env=addDays(today,-o[2]);return{n:`${String(i+1).padStart(3,"0")}/2026`,g:o[0],a:o[1],env,prazo:addBiz(env,5),s:o[3]==="respondido"?"respondido":"aberto",anexos:[],txt:"",bl:[]}});
+let riscos=[
+ {g:3,p:"Serviços de saúde (estoque de medicamentos)",d:"Contrato de fornecimento de medicamentos vence em 15/1/2027 sem licitação concluída",pr:3,im:3,r:"Coordenador do grupo Saúde",pz:"20/12"},
+ {g:0,p:"Caixa insuficiente em janeiro",d:"Folha de dezembro e 13º pagos com receita prevista de 2027",pr:2,im:3,r:"Núcleo fiscal",pz:"06/01"},
+ {g:4,p:"Início do ano letivo",d:"Transporte escolar sem contrato vigente para fevereiro",pr:2,im:2,r:"Coordenador do grupo Educação",pz:"15/01"},
+ {g:7,p:"Perda de conhecimento",d:"Exoneração em massa de comissionados em dezembro",pr:1,im:2,r:"Núcleo de gestão e pessoas",pz:"15/02"}];
+const classe=n=>n>=6?["Crítico","crit"]:n>=3?["Alto","high"]:["Moderado","mod"];
+let sel=null,relG=3;
+const termos={assinados:34,total:41};
+
+const $=s=>document.querySelector(s),view=$("#view");
+let tab="dash";
+
+function kpis(){
+  const tot=GRUPOS.length*BLOCOS.length;
+  const val=matrix.flat().filter(v=>v===4).length;
+  const abertosAtras=oficios.filter(o=>o.s==="aberto"&&o.prazo<today).length+matrix.flat().filter(v=>v===5).length;
+  const crit=riscos.filter(r=>r.pr*r.im>=6).length;
+  return [[Math.round(val/tot*100)+"%","relatório validado"],[oficios.filter(o=>o.s==="aberto").length,"ofícios aguardando resposta"],[abertosAtras,"pedidos fora do prazo",abertosAtras>0],[crit,"riscos críticos",crit>0],[termos.total-termos.assinados,"termos de sigilo pendentes",true]];
+}
+function dash(){
+  const ks=kpis().map(k=>`<div class="kpi ${k[2]?"bad":""}"><div class="n">${k[0]}</div><div class="l">${k[1]}</div></div>`).join("");
+  const ph=FASES.map((f,i)=>`<div class="ph ${i<FASE_ATUAL?"done":i===FASE_ATUAL?"now":""}"><b>${f[0]}</b>${f[1]}</div>`).join("");
+  const rows=GRUPOS.map((g,gi)=>{
+    const v=matrix[gi].filter(x=>x===4).length,pct=Math.round(v/BLOCOS.length*100);
+    const cells=matrix[gi].map((s,bi)=>`<td class="cell"><button class="cellbtn st-${s}" data-g="${gi}" data-b="${bi}" aria-pressed="${sel&&sel[0]===gi&&sel[1]===bi}" aria-label="${esc(g)}, bloco ${bi+1}, ${ST[s].k}" title="${ST[s].k}">${ST[s].i}</button></td>`).join("");
+    return `<tr><th scope="row" style="white-space:normal;min-width:150px;color:var(--ink)">${esc(g)}</th>${cells}<td style="min-width:90px"><div class="bar" title="${pct}% validado"><i style="width:${pct}%"></i></div></td></tr>`}).join("");
+  const heads=BLOCOS.map((b,i)=>`<th class="col" title="${esc(b)}">B${i+1}</th>`).join("");
+  const legend=ST.map((s,i)=>`<span><i class="sw st-${i}">${s.i}</i>${s.k}</span>`).join("");
+  const venc=oficios.filter(o=>o.s==="aberto").sort((a,b)=>a.prazo-b.prazo).slice(0,5).map(o=>{const late=o.prazo<today;return `<li><div><b>${esc(GRUPOS[o.g])}</b><small>${esc(o.a)}</small></div><span class="pill ${late?"late":"open"}">${late?"venceu ":"vence "}${fmt(o.prazo)}</span></li>`}).join("");
+  const rc=riscos.filter(r=>r.pr*r.im>=6).map(r=>`<li><div><b>${esc(GRUPOS[r.g])}</b><small>${esc(r.d)}</small></div><span class="pill crit">${r.pr*r.im}</span></li>`).join("")||`<li class="note">Nenhum risco crítico registrado.</li>`;
+  let det="";
+  if(sel){const [g,b]=sel;det=`<div class="detail"><div><b>${esc(GRUPOS[g])}</b><br><span class="note">Bloco ${b+1} · ${esc(BLOCOS[b])}</span></div>
+   <label class="f">Situação<select id="setst">${ST.map((s,i)=>`<option value="${i}" ${matrix[g][b]===i?"selected":""}>${s.k}</option>`).join("")}</select></label>
+   <button class="btn sec sm" data-open="${g}">Abrir relatório da secretaria</button></div>`}
+  return `<div class="grid">
+   <div class="panel countdown"><div><div class="big">${diasPosse}</div><div class="note">dias até a posse, em ${fmtL(POSSE)}</div></div><div class="phases">${ph}</div></div>
+   <div class="grid kpis">${ks}</div>
+   <div class="grid twoCol">
+    <div class="panel"><h2>Relatório por secretaria</h2><p class="sub">Cada linha é um grupo temático e cada coluna, um dos 8 blocos do relatório padrão. Clique em uma célula para ver ou mudar a situação.</p>
+     <div class="scroll"><table class="mx"><thead><tr><th>Grupo temático</th>${heads}<th>Validado</th></tr></thead><tbody>${rows}</tbody></table></div>
+     <div class="legend">${legend}</div>
+     <div class="note" style="margin-top:8px">${BLOCOS.map((b,i)=>`B${i+1} ${b}`).join(" · ")}</div>${det}</div>
+    <div class="grid" style="align-content:start">
+     <div class="panel"><h3>Próximos prazos</h3><ul class="pend">${venc}</ul></div>
+     <div class="panel"><h3>Riscos críticos (nota 6 a 9)</h3><ul class="pend">${rc}</ul></div>
+    </div></div></div>`;
+}
+function ofView(){
+  const rows=oficios.slice().sort((a,b)=>a.prazo-b.prazo).map(o=>{
+    const late=o.s==="aberto"&&o.prazo<today;
+    const pill=o.s==="respondido"?`<span class="pill ok">Respondido</span>`:late?`<span class="pill late">Fora do prazo</span>`:`<span class="pill open">Aguardando</span>`;
+    const anex=o.anexos.length?`<div class="files">${o.anexos.map(x=>`<span>${esc(x)}</span>`).join("")}</div>`:"";
+    const act=(o.txt?`<button class="btn sec sm" data-ver="${o.n}">${OPEN.has(o.n)?"Ocultar":"Ver ofício"}</button> `:"")+(o.s==="aberto"?`<label class="btn sec sm" style="display:inline-block">Anexar resposta<input type="file" multiple hidden data-respfile="${o.n}"></label> <button class="btn sec sm" data-resp="${o.n}">Respondido sem anexo</button>`:"");
+    const det=OPEN.has(o.n)?`<tr><td colspan="7"><div class="paper" style="min-height:0;padding:20px 24px;font-size:13.5px">${esc(o.txt)}</div></td></tr>`:"";
+    return `<tr><td>${o.n}</td><td>${esc(GRUPOS[o.g])}</td><td style="min-width:220px">${esc(o.a)}${anex}</td><td>${fmt(o.env)}</td><td>${fmt(o.prazo)}</td><td>${pill}</td><td>${act}</td></tr>${det}`}).join("");
+  return `<div class="grid"><div class="panel"><h2>Ofícios e prazos</h2>
+   <p class="sub">O governo em exercício não acessa a plataforma. O ofício sai pelos canais oficiais e a equipe registra aqui o protocolo, o prazo de 5 dias úteis e, depois, a resposta recebida com os anexos. Pedido sem resposta vira o registro "solicitado em [data], não entregue".</p>
+   <div class="formrow"><label class="f grow">Assunto do pedido<input id="of-a" placeholder="Ex.: Lista de contratos assinados desde 1º de outubro"></label>
+   <label class="f">Grupo<select id="of-g">${GRUPOS.map((g,i)=>`<option value="${i}">${esc(g)}</option>`).join("")}</select></label>
+   <label class="f">Data do envio<input id="of-d" type="date" value="${today.toISOString().slice(0,10)}"></label>
+   <button class="btn" id="of-add">Registrar ofício</button></div>
+   <p class="note" style="margin-top:-6px">Para gerar o texto completo, use a aba Gerador de ofícios.</p>
+   <div class="scroll"><table><thead><tr><th>Nº</th><th>Grupo</th><th>Assunto</th><th>Enviado</th><th>Prazo</th><th>Situação</th><th></th></tr></thead><tbody>${rows}</tbody></table></div></div></div>`;
+}
+const T1=["Servidores efetivos","Cargos em comissão e funções gratificadas","Temporários (PSS) com contrato vencendo até 30/6/2027","Terceirizados","Aposentadorias previstas em 2027"];
+const T2=["Dotação autorizada 2026","Empenhado / liquidado / pago em 2026","Restos a pagar inscritos","Despesas obrigatórias de 2027","Proposta da LOA 2027"];
+function relView(){
+  const g=relG,files={};
+  const tbl=(rows,unit)=>`<div class="scroll"><table><thead><tr><th>Item</th><th>${unit}</th><th>Observação</th></tr></thead><tbody>${rows.map((r,i)=>`<tr><td>${esc(r)}</td><td><input aria-label="${esc(r)}" inputmode="numeric"></td><td><input aria-label="Observação: ${esc(r)}"></td></tr>`).join("")}</tbody></table></div>`;
+  const blk=BLOCOS.map((b,i)=>{
+    const s=matrix[g][i];let body;
+    if(i===0)body=tbl(T1,"Quantidade");
+    else if(i===1)body=tbl(T2,"Valor (R$ mil)");
+    else if(i===2)body=`<div class="scroll"><table><thead><tr><th>Objeto</th><th>Fornecedor</th><th>Valor anual (R$ mil)</th><th>Vencimento</th><th>Risco de descontinuidade</th></tr></thead><tbody>${Array.from({length:ROWS[g+"|2"]||2},()=>`<tr>${"<td><input></td>".repeat(5)}</tr>`).join("")}</tbody></table></div><button class="btn sec sm" style="margin-top:8px" data-addrow="2">+ Adicionar contrato</button>`;
+    else if(i===3)body=`<div class="scroll"><table><thead><tr><th>Obra ou projeto</th><th>Município</th><th>Físico (%)</th><th>Financeiro (%)</th><th>Fonte</th><th>Situação</th></tr></thead><tbody>${Array.from({length:ROWS[g+"|3"]||1},()=>`<tr>${"<td><input></td>".repeat(6)}</tr>`).join("")}</tbody></table></div><button class="btn sec sm" style="margin-top:8px" data-addrow="3">+ Adicionar obra</button>`;
+    else body=`<label class="f">Descrição<textarea placeholder="${["Ações judiciais relevantes, apontamentos do TCEPR, TACs e recomendações do MP-PR, pendências no CAUC.","","Decisões com prazo legal, eventos marcados e licitações em curso.","O que pode parar entre 6 de janeiro e 31 de março, com responsável e medida preventiva."][i-4]||"Sistemas críticos, contratos de TI, quem detém senhas e acessos, bases que precisam ser preservadas."}"></textarea></label>`;
+    return `<details class="blk" ${i===0?"open":""}><summary><span>Bloco ${i+1} · ${esc(b)}</span><span class="pill" style="background:var(--s-none-bg);color:var(--s-none-fg)">${ST[s].k}</span></summary><div class="inner">${body}
+     <div class="formrow" style="margin-top:10px"><label class="f">Situação do bloco<select data-bst="${i}">${ST.map((x,k)=>`<option value="${k}" ${s===k?"selected":""}>${x.k}</option>`).join("")}</select></label><label class="f">Anexar documento<input type="file" data-attach="${i}" multiple></label></div><div class="files" id="files-${i}">${(ATT[g+"|"+i]||[]).map(n=>`<span>${esc(n)}</span>`).join("")}</div></div></details>`}).join("");
+  return `<div class="grid"><div class="panel"><div class="formrow"><div class="grow"><h2>Relatório da secretaria</h2><p class="sub" style="margin:0">Mesmos oito blocos para todos os grupos, sempre na mesma ordem. Bloco sem dado fica marcado como "solicitado em [data], não entregue".</p></div>
+   <label class="f">Grupo temático<select id="relg">${GRUPOS.map((x,i)=>`<option value="${i}" ${i===g?"selected":""}>${esc(x)}</option>`).join("")}</select></label></div>
+   ${blk}
+   <details class="blk"><summary><span>Conclusão do grupo</span></summary><div class="inner"><div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(220px,1fr))">
+   ${[1,2,3].map(n=>`<label class="f">Prioridade ${n}<input></label>`).join("")}
+   <label class="f">Recomendação para a estrutura<select><option>Manter</option><option>Fundir</option><option>Extinguir</option><option>Criar</option></select></label></div></div></details>
+   <p class="note">Os questionários específicos da área (por exemplo, Saúde: estoque de medicamentos, filas, contratos com hospitais) aparecem como perguntas com anexo dentro de cada bloco.</p></div></div>`;
+}
+function riskView(){
+  const opts=Object.entries(PONTOS).map(([c,l])=>`<optgroup label="${esc(c)}">${l.map(x=>`<option>${esc(x)}</option>`).join("")}</optgroup>`).join("");
+  const sc=[1,2,3];const lv=["1 · baixa","2 · média","3 · alta"];
+  const rows=riscos.slice().sort((a,b)=>b.pr*b.im-a.pr*a.im).map(r=>{const n=r.pr*r.im,c=classe(n);return `<tr><td><span class="risk-score">${n}</span> <span class="pill ${c[1]}">${c[0]}</span></td><td>${esc(GRUPOS[r.g])}</td><td style="min-width:240px"><b>${esc(r.p)}</b><br><span class="note">${esc(r.d)}</span></td><td>${r.pr}×${r.im}</td><td>${esc(r.r)}</td><td>${esc(r.pz)}</td><td>${n>=6?"Decisão do governador eleito":n>=3?"Plano dos 100 dias":"Futuro secretário"}</td></tr>`}).join("");
+  return `<div class="grid"><div class="panel"><h2>Mapa de riscos</h2>
+  <p class="sub">O grupo escolhe o ponto crítico do kit, informa probabilidade e impacto (1 a 3) e o sistema calcula a nota e o destino do risco.</p>
+  <div class="formrow"><label class="f">Grupo<select id="rk-g">${GRUPOS.map((g,i)=>`<option value="${i}">${esc(g)}</option>`).join("")}</select></label>
+  <label class="f grow">Ponto crítico<select id="rk-p">${opts}</select></label>
+  <label class="f">Probabilidade<select id="rk-pr">${sc.map((s,i)=>`<option value="${s}">${lv[i]}</option>`).join("")}</select></label>
+  <label class="f">Impacto<select id="rk-im">${sc.map((s,i)=>`<option value="${s}">${lv[i]}</option>`).join("")}</select></label></div>
+  <div class="formrow"><label class="f grow">O que foi encontrado<input id="rk-d" placeholder="Descreva o sinal de alerta"></label>
+  <label class="f">Responsável<input id="rk-r" placeholder="Nome ou núcleo"></label>
+  <label class="f">Prazo<input id="rk-z" placeholder="dd/mm"></label>
+  <button class="btn" id="rk-add">Adicionar ao mapa</button></div>
+  <div class="scroll"><table><thead><tr><th>Nota</th><th>Grupo</th><th>Risco</th><th>Prob.×Imp.</th><th>Responsável</th><th>Prazo</th><th>Destino</th></tr></thead><tbody>${rows}</tbody></table></div></div></div>`;
+}
+function teamView(){
+  const P=[["Administração (Alcione Gomes)","Aprova acessos, vê tudo, gerencia usuários e termos","✓","✓","✓","✓"],
+   ["Coordenação geral","Cobra prazos, valida relatórios, decide riscos","✓","✓","✓","–"],
+   ["Secretaria-executiva","Consolida relatórios, padroniza, gera o consolidado","✓","✓","✓","–"],
+   ["Núcleos (fiscal, jurídico, pessoas, TI, articulação, comunicação)","Apoiam todos os grupos conforme a área","só a sua área","✓","✓","–"],
+   ["Coordenador de grupo","Responde pelo relatório da sua secretaria","só o seu grupo","só o seu grupo","✓","–"],
+   ["Técnico de grupo","Preenche e anexa no seu grupo","só o seu grupo","só o seu grupo","–","–"],
+   ["Governador eleito e vice","Lê o painel e o relatório consolidado","✓","–","–","–"]];
+  const rows=P.map(p=>`<tr><td>${p[0]}</td><td class="note">${p[1]}</td>${p.slice(2).map(c=>`<td class="${c==="–"?"no":"yes"}">${c}</td>`).join("")}</tr>`).join("");
+  return `<div class="grid"><div class="panel"><h2>Equipe e acessos</h2>
+  <p class="sub">Só entra quem foi aprovado pela Administração e assinou o Termo de confidencialidade. Servidores do governo em exercício não têm conta: o que eles entregam é registrado pela equipe.</p>
+  <div class="grid kpis" style="margin-bottom:16px"><div class="kpi"><div class="n">${termos.assinados}/${termos.total}</div><div class="l">termos assinados</div></div>
+  <div class="kpi bad"><div class="n">${termos.total-termos.assinados}</div><div class="l">acessos bloqueados até assinar</div></div>
+  <div class="kpi"><div class="n">100%</div><div class="l">ações registradas em auditoria</div></div></div>
+  <div class="scroll"><table class="roles"><thead><tr><th>Perfil</th><th>O que faz</th><th>Painel</th><th>Ofícios</th><th>Riscos</th><th>Usuários</th></tr></thead><tbody>${rows}</tbody></table></div>
+  <p class="note" style="margin-top:12px">Também previsto: declaração de conflito de interesses no cadastro, marca d'água nos downloads, canal restrito para registrar indícios de irregularidade (visível só à coordenação) e devolução ou destruição dos dados ao fim da transição.</p></div></div>`;
+}
+const TPLBL={fluxo:[1,7],pessoal:[0],prev:[1],saude:[2,7],edu:[2,7],seg:[0,2,7],infra:[3,2],agro:[2,7],social:[2],civil:[4,6],estatal:[4],contr:[2],ti:[5],rel:[0,1,2,3,4,5,6,7]};
+const REL={},ATT={},ROWS={},OPEN=new Set();
+const bump=(g,bl,min,to)=>bl.forEach(b=>{if(matrix[g][b]<min||matrix[g][b]===5)matrix[g][b]=to});
+/* ===== Base de autoridades (levantada na imprensa; conferir no Diário Oficial antes de enviar) ===== */
+const A=(o,sg,nm,tr,tit,g,st,obs)=>({o,sg,nm,tr,tit,g,st,obs:obs||""});
+const SEC="Secretário(a) de Estado ";
+const AUT=[
+ A("Casa Civil","CC","João Carlos Ortega","M",SEC+"da Casa Civil",9,"imp","Constava na lista anterior a abril/2026."),
+ A("Secretaria da Fazenda","SEFA","Renê Garcia","M",SEC+"da Fazenda",0,"imp","Permaneceu no cargo segundo a imprensa."),
+ A("Controladoria-Geral do Estado","CGE","Raul Siqueira","M","Controlador(a)-Geral do Estado",9,"imp","Permaneceu no cargo segundo a imprensa."),
+ A("Procuradoria-Geral do Estado","PGE","Letícia Ferreira da Silva","F","Procurador(a)-Geral do Estado",9,"imp",""),
+ A("Secretaria da Saúde","SESA","César Neves","M",SEC+"da Saúde",3,"imp","Nomeado após a saída do titular anterior, em 2026."),
+ A("Secretaria da Educação","SEED","Roni Miranda","M",SEC+"da Educação",4,"imp",""),
+ A("Secretaria da Segurança Pública","SESP","Saulo de Tarso Sanson Silva","M",SEC+"da Segurança Pública",5,"imp","Assumiu em 7/4/2026, a princípio de forma interina. Confirmar se foi efetivado."),
+ A("Secretaria da Infraestrutura e Logística","SEIL","Fernando Furiatti","M",SEC+"da Infraestrutura e Logística",6,"imp",""),
+ A("Secretaria da Agricultura e do Abastecimento","SEAB","Natalino Avance de Souza","M",SEC+"da Agricultura e do Abastecimento",7,"imp",""),
+ A("Secretaria do Desenvolvimento Sustentável","SEDEST","Everton Souza","M",SEC+"do Desenvolvimento Sustentável",7,"imp","Anunciado em 10/4/2026."),
+ A("Secretaria do Desenvolvimento Social e Família","SEDEF","","?",SEC+"do Desenvolvimento Social e Família",8,"def","O titular anterior deixou o cargo em abril/2026. Substituto não localizado."),
+ A("Secretaria da Administração e da Previdência","SEAP","","?",SEC+"da Administração e da Previdência",1,"def","Titular anterior deixou o cargo em abril/2026. Há lista antiga citando Elisandro Pires Frigo. Confirmar."),
+ A("Secretaria do Planejamento","SEPL","Clemeson Aparecido da Silva","M",SEC+"do Planejamento",1,"imp","A grafia do nome varia entre as fontes (Clemeson/Clemersom)."),
+ A("Secretaria das Cidades","SECID","Fernando Giacobo","M",SEC+"das Cidades",6,"imp",""),
+ A("Secretaria do Turismo","SETU","Luciano Bartolomeu","M",SEC+"do Turismo",null,"imp",""),
+ A("Secretaria do Esporte","SEES","Walmir da Silva Matos","M",SEC+"do Esporte",null,"imp",""),
+ A("Secretaria da Cultura","SEEC","Luciana Casagrande Pereira","F",SEC+"da Cultura",null,"imp",""),
+ A("Secretaria da Mulher, Igualdade Racial e Pessoa Idosa","","Mariana Neris","F",SEC+"da Mulher, Igualdade Racial e Pessoa Idosa",8,"imp","Anunciada em 10/4/2026."),
+ A("Secretaria da Indústria, Comércio e Serviços","SEIC","Felipe Flessak","M",SEC+"da Indústria, Comércio e Serviços",null,"imp",""),
+ A("Secretaria do Trabalho, Qualificação e Renda","SETR","Willian Porfirio","M",SEC+"do Trabalho, Qualificação e Renda",8,"imp",""),
+ A("Secretaria da Justiça e Cidadania","SEJU","Fabiana Cristina de Campos Romani","F",SEC+"da Justiça e Cidadania",5,"imp","Citada em reportagem sobre a substituição do titular anterior. Data da nomeação não confirmada."),
+ A("Casa Militar","","Sérgio Vieira Benício","M","Chefe da Casa Militar",5,"imp","Constava na lista anterior a abril/2026."),
+ A("Secretaria da Ciência, Tecnologia e Ensino Superior","SETI","Aldo Bona","M",SEC+"da Ciência, Tecnologia e Ensino Superior",4,"imp","Constava na lista anterior a abril/2026."),
+ A("Secretaria da Inovação, Modernização e Transformação Digital","","","?",SEC+"da Inovação, Modernização e Transformação Digital",null,"def","O titular anterior deixou o cargo em abril/2026."),
+ A("Chefia de Gabinete do Governador","","","?","Chefe de Gabinete do Governador",9,"def","O titular anterior deixou o cargo em abril/2026."),
+ A("Secretaria da Comunicação Social","","","?",SEC+"da Comunicação Social",null,"def",""),
+ A("Paranaprevidência","","","?","Diretor(a)-Presidente da Paranaprevidência",2,"def","Titular a levantar."),
+ A("Sanepar","","","?","Diretor(a)-Presidente da Sanepar",10,"def","Titular a levantar."),
+ A("Copel","","","?","Diretor(a)-Presidente da Copel",10,"def","Titular a levantar. O Estado é acionista."),
+ A("Celepar","","","?","Diretor(a)-Presidente da Celepar",10,"def","Titular a levantar."),
+ A("Portos do Paraná","","","?","Diretor(a)-Presidente dos Portos do Paraná",10,"def","Titular a levantar."),
+ A("Detran-PR","","","?","Diretor(a)-Geral do Detran-PR",null,"def","Titular a levantar.")];
+const ST_AUT={ok:["Conferido","ok"],imp:["Imprensa, conferir","high"],def:["A definir","late"]};
+
+/* ===== Modelos de pedido (baseados nos questionários e pontos críticos do kit) ===== */
+const TPL={
+ fluxo:{n:"Fazenda: caixa, dívida e regularidade",as:"Informações fiscais e de caixa",it:["Fluxo de caixa projetado, em base diária, de dezembro de 2026 a março de 2027, com a folha de dezembro e o 13º salário.","Restos a pagar por credor e por data, separando processados e não processados, com o caixa vinculado.","Estoque da dívida e cronograma de serviço da dívida em 2027.","Situação da nota Capag, risco de perda e situação quanto ao Regime de Recuperação Fiscal ou ao Propag.","Incentivos fiscais que vencem ou precisam de renovação e o impacto estimado da transição para o IBS.","Precatórios e depósitos judiciais com impacto de caixa.","Operações de crédito contratadas ou em negociação e suas contrapartidas."]},
+ pessoal:{n:"Planejamento e Administração: pessoal e patrimônio",as:"Informações sobre pessoal, patrimônio e planejamento",it:["Quantitativo de servidores efetivos, cargos em comissão e funções gratificadas, temporários (PSS) com contrato vencendo até 30/6/2027 e terceirizados.","Aposentadorias previstas em 2027.","Reajustes e promoções já concedidos com efeito em 2027.","Concursos em andamento ou homologados.","Situação da frota, dos imóveis e dos contratos de manutenção predial.","Estágio do PPA 2028–2031 e providências necessárias em 2027."]},
+ prev:{n:"Previdência",as:"Informações sobre o regime próprio de previdência",it:["Déficit atuarial e financeiro do RPPS.","Aportes do Tesouro previstos para 2027 e cálculo atuarial que os sustenta.","Situação da previdência complementar."]},
+ saude:{n:"Saúde",as:"Informações sobre a área da Saúde",it:["Estoque de medicamentos e insumos, em dias de consumo.","Contratos com hospitais, consórcios e organizações sociais que vencem até junho de 2027.","Tamanho das filas de consultas, exames e cirurgias eletivas e funcionamento da regulação de leitos e vagas.","Repasses federais do SUS pendentes ou em risco."]},
+ edu:{n:"Educação",as:"Informações sobre a área da Educação",it:["Calendário do ano letivo de 2027 e situação de sua aprovação.","Situação dos contratos de transporte escolar e de merenda para fevereiro de 2027.","Número de professores temporários a contratar para o início das aulas.","Situação do Fundeb e das obras em escolas."]},
+ seg:{n:"Segurança Pública",as:"Informações sobre a área da Segurança Pública",it:["Efetivo da Polícia Militar, da Polícia Civil e do Corpo de Bombeiros, aposentadorias previstas em 2027, escalas e horas extras.","Ocupação do sistema prisional e situação dos contratos de alimentação.","Indicadores de criminalidade dos últimos quatro anos.","Compras de viaturas, armamento ou tecnologia em andamento.","Contratos de combustível e de viaturas com vencimento até março de 2027."]},
+ infra:{n:"Infraestrutura e Logística",as:"Informações sobre obras, concessões e conservação",it:["Situação das concessões rodoviárias e das PPPs.","Relação das obras paralisadas e o motivo de cada paralisação.","Contrato de conservação da malha estadual e data de vencimento.","Relação das dez maiores obras, com execução física e financeira, para visita técnica."]},
+ agro:{n:"Agricultura e Meio Ambiente",as:"Informações sobre agricultura, meio ambiente e defesa agropecuária",it:["Situação da defesa agropecuária e dos status sanitários do Estado.","Licenciamentos ambientais pendentes e prazo médio de análise.","Programas de fomento com parcelas a pagar em 2027."]},
+ social:{n:"Assistência Social e Desenvolvimento",as:"Informações sobre programas sociais",it:["Programas estaduais de transferência de renda e público atendido (dados agregados, sem identificação de beneficiários).","Valores de cofinanciamento devidos aos 399 municípios.","Contratos e convênios com vencimento até junho de 2027."]},
+ civil:{n:"Casa Civil, PGE e Controladoria",as:"Informações jurídicas, legislativas e de controle",it:["Projetos de lei do Executivo em tramitação na Assembleia Legislativa.","Decretos e regulamentos pendentes.","Ações judiciais com possível impacto acima de R$ 10 milhões, com relatório da PGE.","Auditorias e tomadas de contas abertas e situação do programa de integridade."]},
+ estatal:{n:"Estatais",as:"Informações sobre a empresa e sua governança",it:["Composição e mandato do conselho de administração e da diretoria.","Resultados e investimentos previstos.","Acordos de acionistas ou contratos de programa que limitem decisões do novo governo.","Auditorias e tomadas de contas abertas."]},
+ contr:{n:"Contratos e aditivos (qualquer órgão)",as:"Relação de contratos, convênios e aditivos",it:["Relação de todos os contratos e aditivos assinados desde 1º de outubro de 2026, com objeto, fornecedor, valor e vigência.","Contratos essenciais com vencimento entre dezembro de 2026 e março de 2027 e situação das licitações correspondentes.","Nomeações, contratações temporárias e reajustes concedidos desde julho de 2026.","Empenhos realizados a partir de maio de 2026 sem caixa vinculado."]},
+ ti:{n:"Sistemas, dados e acessos",as:"Inventário de sistemas e bases de dados",it:["Inventário dos sistemas críticos, com responsável e contrato de manutenção.","Contratos de TI com vencimento até março de 2027.","Indicação de quem detém senhas e acessos privilegiados.","Bases de dados que precisam ser preservadas e situação das cópias de segurança."]},
+ rel:{n:"Relatório padrão (blocos 1 a 8)",as:"Dados para o relatório padrão da transição",it:["Bloco 1 · Estrutura e pessoas: efetivos, comissionados, PSS, terceirizados e aposentadorias previstas.","Bloco 2 · Orçamento: dotação, execução, restos a pagar, despesas obrigatórias de 2027 e proposta da LOA.","Bloco 3 · Contratos e convênios: objeto, fornecedor, valor anual, vencimento e risco de descontinuidade.","Bloco 4 · Obras e projetos: município, execução física e financeira, fonte e situação.","Bloco 5 · Passivos e riscos jurídicos: ações relevantes, apontamentos do TCE-PR, TACs, recomendações do MP-PR e pendências no CAUC.","Bloco 6 · Sistemas e dados.","Bloco 7 · Agenda dos 100 dias: decisões com prazo legal, eventos marcados e licitações em curso.","Bloco 8 · Riscos imediatos: o que pode parar entre 6 de janeiro e 31 de março."]}};
+const TPLMAP={0:"fluxo",1:"pessoal",2:"prev",3:"saude",4:"edu",5:"seg",6:"infra",7:"agro",8:"social",9:"civil",10:"estatal"};
+const EXT={1:"um",2:"dois",3:"três",4:"quatro",5:"cinco",6:"seis",7:"sete",8:"oito",9:"nove",10:"dez"};
+const gf=(s,tr)=>tr==="M"?s.replace(/o\(a\)/g,"o").replace(/\(a\)/g,""):tr==="F"?s.replace(/o\(a\)/g,"a").replace(/\(a\)/g,"a"):s;
+const G={org:0,nm:"",tr:"?",cargo:"",tpl:"fluxo",chk:[],extra:"",dias:5,sig:"eleito",dec:"___/2026",num:"",data:today.toISOString().slice(0,10),mail:"[e-mail da coordenação da transição]",grp:0,dirty:false,text:"",msg:""};
+function setOrg(i){G.done=null;const a=AUT[i];G.org=i;G.nm=a.nm;G.tr=a.tr;G.cargo=a.tit;G.grp=a.g==null?1:a.g;G.tpl=TPLMAP[a.g]||"contr";resetItems()}
+function resetItems(){G.chk=TPL[G.tpl].it.map(()=>true)}
+G.num=String(oficios.length+1).padStart(3,"0");setOrg(0);
+function buildText(){
+  const t=TPL[G.tpl],tr=G.tr,a=AUT[G.org],eleito=G.sig==="eleito";
+  const itens=t.it.filter((_,i)=>G.chk[i]).concat(G.extra.split("\n").map(s=>s.trim()).filter(Boolean));
+  const dtx=new Date(G.data+"T12:00:00").toLocaleDateString("pt-BR",{day:"numeric",month:"long",year:"numeric"});
+  const quem=eleito?"Governador eleito do Estado do Paraná":"Coordenador(a)-Geral da Equipe de Transição Governamental";
+  const nomeSig=eleito?"Sergio Moro":"[Nome do(a) Coordenador(a)-Geral]";
+  const v=G.cargo.split(/\s+d[eoa]s?\s+/)[0];
+  const n=G.dias,dx=EXT[n]?`${n} (${EXT[n]})`:String(n);
+  const L=[
+   `OFÍCIO Nº ${G.num}/2026 – TRANSIÇÃO`,"",`Curitiba, ${dtx}.`,"",
+   gf("A Sua Excelência o(a) Senhor(a)",tr),G.nm||"[Nome do(a) titular]",gf(G.cargo,tr),a.o,"Curitiba – PR","",
+   `Assunto: ${t.as}.`,"",
+   `${gf("Senhor(a) ",tr)}${gf(v,tr)},`,"",
+   `${gf("Cumprimentando-o(a)",tr)}, dirijo-me a Vossa Excelência na condição de ${gf(quem,eleito?"M":"?")}, para, com fundamento no Decreto nº ${G.dec}, que instituiu o processo de transição governamental entre o Governo do Estado em exercício e o Governador eleito para o mandato 2027–2030, solicitar as informações abaixo relacionadas, a serem fornecidas no prazo de ${dx} dias úteis, a contar do recebimento deste ofício (art. [4º]):`,"",
+   ...itens.map((s,i)=>`${i+1}. ${s}`),"",
+   `As informações e os documentos deverão ser encaminhados, preferencialmente em formato digital editável (planilha ou PDF pesquisável), para ${G.mail}.`,"",
+   "As informações protegidas por sigilo serão tratadas com reserva pelos membros da equipe de transição, que assinam termo de confidencialidade, em conformidade com a Lei nº 12.527/2011 e a Lei nº 13.709/2018.","",
+   "Caso o órgão ainda não tenha indicado o interlocutor responsável pelo atendimento à equipe de transição (art. [5º]), solicito que o faça no prazo de 48 horas. Se algum item não puder ser atendido, peço que a impossibilidade seja registrada por escrito, com a respectiva justificativa.","",
+   "Certo de sua colaboração em benefício da continuidade dos serviços públicos, renovo protestos de elevada estima e consideração.","",
+   "Atenciosamente,","","",nomeSig,gf(quem,eleito?"M":"?")];
+  return L.join("\n");
+}
+function genView(){
+  if(!G.dirty)G.text=buildText();
+  const a=AUT[G.org],t=TPL[G.tpl];
+  const orgs=AUT.map((x,i)=>`<option value="${i}" ${i===G.org?"selected":""}>${esc(x.o)}</option>`).join("");
+  const tpls=Object.entries(TPL).map(([k,x])=>`<option value="${k}" ${k===G.tpl?"selected":""}>${esc(x.n)}</option>`).join("");
+  const items=t.it.map((s,i)=>`<label class="chk"><input type="checkbox" data-gi="${i}" ${G.chk[i]?"checked":""}><span>${esc(s)}</span></label>`).join("");
+  const stw=a.st!=="ok"?`<div class="warn">Destinatário ainda não conferido no Diário Oficial (${ST_AUT[a.st][0].toLowerCase()}). Confira em Autoridades antes de enviar.${a.obs?" "+esc(a.obs):""}</div>`:"";
+  return `<div class="gen"><div class="panel form"><div><h2>Gerador de ofícios</h2><p class="sub" style="margin:0">Escolha a secretaria e o modelo. O texto ao lado já nasce montado e pode ser editado livremente.</p></div>${stw}
+   <label class="f">Secretaria ou órgão<select id="g-org">${orgs}</select></label>
+   <div class="two"><label class="f">Nome do destinatário<input id="g-nm" value="${esc(G.nm)}" placeholder="Titular a definir"></label>
+   <label class="f">Tratamento<select id="g-tr"><option value="M" ${G.tr==="M"?"selected":""}>Masculino</option><option value="F" ${G.tr==="F"?"selected":""}>Feminino</option><option value="?" ${G.tr==="?"?"selected":""}>Não informado</option></select></label></div>
+   <label class="f">Cargo<input id="g-cargo" value="${esc(G.cargo)}"></label>
+   <label class="f">Modelo de pedido<select id="g-tpl">${tpls}</select></label>
+   <div><h3>Itens do pedido</h3>${items}</div>
+   <label class="f">Itens adicionais (um por linha)<textarea id="g-extra" style="min-height:64px">${esc(G.extra)}</textarea></label>
+   <div class="two"><label class="f">Prazo (dias úteis)<input id="g-dias" type="number" min="1" max="30" value="${G.dias}"></label>
+   <label class="f">Data<input id="g-data" type="date" value="${G.data}"></label></div>
+   <div class="two"><label class="f">Ofício nº<input id="g-num" value="${esc(G.num)}"></label><label class="f">Decreto nº<input id="g-dec" value="${esc(G.dec)}"></label></div>
+   <label class="f">Quem assina<select id="g-sig"><option value="eleito" ${G.sig==="eleito"?"selected":""}>Sergio Moro, Governador eleito</option><option value="coord" ${G.sig==="coord"?"selected":""}>Coordenador(a)-Geral da transição</option></select></label>
+   <label class="f">Respostas para<input id="g-mail" value="${esc(G.mail)}"></label>
+   <label class="f">Grupo temático responsável<select id="g-grp">${GRUPOS.map((x,i)=>`<option value="${i}" ${i===G.grp?"selected":""}>${esc(x)}</option>`).join("")}</select></label></div>
+   <div><div class="actions"><button class="btn" id="g-copy">Copiar texto</button><button class="btn sec" id="g-reg">Registrar no controle de prazos</button><button class="btn sec" id="g-regen">Refazer o texto</button></div>
+   <div id="g-bar">${G.msg?`<div class="okmsg">${esc(G.msg)}</div>`:G.dirty?`<div class="warn">Você editou o texto à mão. Mudar os campos ao lado não o altera. Use "Refazer o texto" para voltar ao modelo.</div>`:""}</div>
+   <div class="paper" id="g-doc" contenteditable="true" spellcheck="true" role="textbox" aria-multiline="true" aria-label="Texto do ofício">${esc(G.text)}</div>
+   <p class="note" style="margin-top:8px">Os números de artigos entre colchetes seguem a minuta do kit. Ajuste para o decreto efetivamente publicado. Na versão final, o ofício também sai em PDF e Word, com timbre.</p></div></div>`;
+}
+let AQ="";
+function autRows(){
+  return AUT.map((x,i)=>({x,i})).filter(({x})=>!AQ||(x.o+" "+x.nm+" "+x.sg).toLowerCase().includes(AQ.toLowerCase())).map(({x,i})=>`<tr>
+   <td style="min-width:200px"><b>${esc(x.o)}</b>${x.sg?` <span class="note">${esc(x.sg)}</span>`:""}${x.obs?`<br><span class="note">${esc(x.obs)}</span>`:""}</td>
+   <td><input data-ai="${i}" data-f="nm" value="${esc(x.nm)}" aria-label="Titular de ${esc(x.o)}" placeholder="A definir"></td>
+   <td><select data-ai="${i}" data-f="st" aria-label="Situação">${Object.entries(ST_AUT).map(([k,v])=>`<option value="${k}" ${x.st===k?"selected":""}>${v[0]}</option>`).join("")}</select></td>
+   <td style="white-space:nowrap"><button class="btn sec sm" data-use="${i}">Fazer ofício</button> <button class="btn sec sm" data-del="${i}" aria-label="Remover ${esc(x.o)}">Remover</button></td></tr>`).join("");
+}
+function autView(){
+  const c={ok:0,imp:0,def:0};AUT.forEach(x=>c[x.st]++);
+  return `<div class="grid"><div class="panel"><h2>Autoridades</h2>
+  <p class="sub">Base dos titulares das secretarias e órgãos, levantada a partir de notícias de abril a outubro de 2026. Não consegui abrir o site oficial do governo, então nada aqui está conferido. Antes de enviar um ofício, confirme o titular no Diário Oficial ou com a Casa Civil e marque "Conferido".</p>
+  <div class="grid kpis" style="margin-bottom:14px"><div class="kpi"><div class="n">${c.ok}</div><div class="l">conferidos</div></div><div class="kpi"><div class="n">${c.imp}</div><div class="l">vindos da imprensa, a conferir</div></div><div class="kpi bad"><div class="n">${c.def}</div><div class="l">titular a definir</div></div></div>
+  <div class="formrow"><label class="f grow">Buscar<input id="a-q" placeholder="Nome do órgão ou do titular" value="${esc(AQ)}"></label>
+  <label class="f">Novo órgão<input id="a-o" placeholder="Nome do órgão"></label><label class="f">Titular<input id="a-n" placeholder="Nome"></label><button class="btn" id="a-add">Adicionar</button></div>
+  <div class="scroll"><table><thead><tr><th>Órgão</th><th>Titular</th><th>Situação</th><th></th></tr></thead><tbody id="aut-body">${autRows()}</tbody></table></div></div></div>`;
+}
+function regen(){
+  G.done=null;
+  if(G.dirty){$("#g-bar").innerHTML=`<div class="warn">Você editou o texto à mão. Mudar os campos ao lado não o altera. Use "Refazer o texto" para voltar ao modelo.</div>`;return}
+  G.text=buildText();$("#g-doc").textContent=G.text;
+}
+view.addEventListener("input",e=>{
+  const id=e.target.id||"";
+  if(id==="g-doc"){G.done=null;G.dirty=true;G.msg="";G.text=e.target.innerText;$("#g-bar").innerHTML=`<div class="warn">Você editou o texto à mão. Mudar os campos ao lado não o altera. Use "Refazer o texto" para voltar ao modelo.</div>`;return}
+  const m={"g-nm":"nm","g-cargo":"cargo","g-extra":"extra","g-num":"num","g-dec":"dec","g-mail":"mail","g-data":"data"}[id];
+  if(m){G[m]=e.target.value;G.msg="";regen();return}
+  if(id==="g-dias"){G.dias=Math.max(1,Math.min(30,+e.target.value||5));regen();return}
+  if(id==="a-q"){AQ=e.target.value;$("#aut-body").innerHTML=autRows()}
+});
+view.addEventListener("change",e=>{
+  const id=e.target.id||"";
+  if(e.target.dataset.gi!==undefined){G.chk[+e.target.dataset.gi]=e.target.checked;regen();return}
+  if(id==="g-org"){setOrg(+e.target.value);G.msg="";render();return}
+  if(id==="g-tpl"){G.done=null;G.tpl=e.target.value;resetItems();render();return}
+  if(id==="g-tr"){G.tr=e.target.value;regen();return}
+  if(id==="g-sig"){G.sig=e.target.value;regen();return}
+  if(id==="g-grp"){G.grp=+e.target.value;return}
+  if(e.target.dataset.ai!==undefined){AUT[+e.target.dataset.ai][e.target.dataset.f]=e.target.value;if(e.target.dataset.f==="st"||e.target.dataset.f==="nm")render()}
+});
+view.addEventListener("click",e=>{
+  const id=e.target.id||"";
+  if(id==="g-regen"){G.dirty=false;G.msg="";render();return}
+  if(id==="g-copy"){const txt=$("#g-doc").innerText;const done=ok=>{$("#g-bar").innerHTML=`<div class="${ok?"okmsg":"warn"}">${ok?"Texto copiado.":"Não foi possível copiar. Selecione o texto e use Ctrl+C."}</div>`};
+    try{navigator.clipboard.writeText(txt).then(()=>done(true),()=>done(false))}catch(_){done(false)}return}
+  if(id==="g-reg"){const env=new Date(G.data+"T00:00:00");const n=`${G.num}/2026`;
+    if(G.done){G.msg=`Este ofício já foi registrado como ${G.done}. Mude algum campo ou o número para registrar outro.`;render();return}
+    if(oficios.some(o=>o.n===n)){G.msg=`Já existe o ofício ${n}. Mude o número antes de registrar.`;render();return}
+    const bl=TPLBL[G.tpl]||[],antes=bl.filter(b=>matrix[G.grp][b]===0).length;
+    oficios.push({n,g:G.grp,a:TPL[G.tpl].as+" ("+AUT[G.org].o+")",env,prazo:addBiz(env,G.dias),s:"aberto",anexos:[],txt:$("#g-doc").innerText,bl});
+    bl.forEach(b=>{if(matrix[G.grp][b]===0)matrix[G.grp][b]=1});
+    G.msg=`Ofício ${n} registrado com o texto. Prazo de resposta: ${fmtL(addBiz(env,G.dias))}.${antes?` ${antes} bloco(s) de ${GRUPOS[G.grp]} passaram a "Solicitado" no painel.`:""}`;G.done=n;G.num=String(oficios.length+1).padStart(3,"0");render();return}
+  if(e.target.dataset.use!==undefined){setOrg(+e.target.dataset.use);G.dirty=false;G.msg="";tab="gen";render();return}
+  if(e.target.dataset.del!==undefined){AUT.splice(+e.target.dataset.del,1);setOrg(0);render();return}
+  if(id==="a-add"){const o=$("#a-o").value.trim();if(!o){$("#a-o").focus();return}
+    AUT.push(A(o,"",$("#a-n").value.trim(),"?",SEC+"de "+o,null,$("#a-n").value.trim()?"imp":"def",""));render()}
+});
+
+/* ===== Declaração de conflito de interesses ===== */
+const D={nome:"",grupo:0,q:{},areas:{forn:[],par:[],cargo:[]},orgao:"",funcao:"oper",termo:false,msg:""};
+const decl=[
+ {n:"Membro A (exemplo)",g:3,res:"Liberado",tone:"ok",ok:true,det:"Sem vínculos declarados."},
+ {n:"Membro B (exemplo)",g:4,res:"Liberado com restrições",tone:"high",ok:false,det:"Bloqueado no grupo Educação: sócio de empresa de transporte escolar."},
+ {n:"Membro C (exemplo)",g:8,res:"Liberado com restrições",tone:"high",ok:false,det:"Servidor cedido ao governo atual, função operacional. Acesso técnico, sem dossiê do próprio órgão."}];
+const CQ=[
+ ["forn","Você, seu cônjuge ou parente de até 2º grau é sócio, dirigente, empregado ou consultor de empresa com contrato, convênio ou concessão com o Estado?","Em quais áreas há esse vínculo?"],
+ ["par","Você tem parente de até 3º grau em cargo de direção ou chefia em alguma secretaria ou estatal?","Em quais áreas?"],
+ ["atual","Você é servidor, comissionado ou cedido do governo atual (estadual)?",null],
+ ["cargo","Você pretende, ou foi cogitado(a), para cargo no novo governo?","Para qual área?"],
+ ["lobby","Você presta consultoria ou representa clientes que dependem de decisões do Estado?",null],
+ ["doa","Você ou sua empresa doou para a campanha, ou você ocupa cargo em partido? (informativo, não bloqueia por si só)",null],
+ ["info","Você teve acesso a informações sigilosas do Estado por outra função e fora dos canais oficiais?",null]];
+function confRes(){
+  const q=D.q,blocks=new Set(),rest=[],par=[];
+  const unanswered=CQ.filter(c=>!q[c[0]]).length;
+  if(q.forn==="s"){D.areas.forn.forEach(i=>blocks.add(i));if(!D.areas.forn.length)par.push("Indique as áreas em que há vínculo com fornecedor.")}
+  if(q.par==="s"){D.areas.par.forEach(i=>blocks.add(i));if(!D.areas.par.length)par.push("Indique as áreas em que há parente em cargo de direção.")}
+  if(q.atual==="s"){rest.push(`Marcado como "vínculo ativo com o governo atual": acesso técnico, sem acesso aos dossiês do próprio órgão${D.orgao?" ("+D.orgao+")":""}. O que vier desse órgão chega só por ofício.`);if(D.funcao!=="oper")par.push("Função de chefia, contratos ou orçamento: pedir parecer da PGE antes de liberar o acesso.")}
+  if(q.cargo==="s")rest.push("Abstenção registrada nas deliberações sobre estrutura, cargos e nomes da pasta de interesse"+(D.areas.cargo.length?": "+D.areas.cargo.map(i=>GRUPOS[i]).join(", "):"")+".");
+  if(q.lobby==="s")par.push("Atividade de consultoria ou representação de clientes: parecer sobre a atuação nas áreas relacionadas.");
+  if(q.doa==="s")rest.push("Doação ou cargo partidário registrado como informação, sem bloqueio automático.");
+  if(q.info==="s")par.push("Acesso anterior a informação sigilosa fora dos canais oficiais: parecer jurídico e orientação de não utilizá-la.");
+  const bl=[...blocks];
+  let status="Liberado",tone="ok";
+  if(par.length){status="Aguardando parecer";tone="late"}else if(bl.length||rest.length){status="Liberado com restrições";tone="high"}
+  return {unanswered,bl,rest,par,status,tone};
+}
+function confView(){
+  const r=confRes();
+  const areaBoxes=k=>`<div class="files" style="gap:8px">${GRUPOS.map((g,i)=>`<label class="chk" style="border:0;padding:0"><input type="checkbox" data-ca="${k}" value="${i}" ${D.areas[k].includes(i)?"checked":""}><span>${esc(g)}</span></label>`).join("")}</div>`;
+  const qs=CQ.map(c=>{const v=D.q[c[0]];
+    const extra=v==="s"&&c[2]?`<div style="margin-top:8px"><span class="note">${c[2]}</span>${areaBoxes(c[0])}</div>`:"";
+    const atual=c[0]==="atual"&&v==="s"?`<div class="two" style="margin-top:8px"><label class="f">Órgão em que atua<input id="c-org" value="${esc(D.orgao)}" placeholder="Ex.: SEDEF"></label><label class="f">Tipo de função<select id="c-fun"><option value="oper" ${D.funcao==="oper"?"selected":""}>Operacional</option><option value="ch" ${D.funcao==="ch"?"selected":""}>Chefia ou direção</option><option value="cont" ${D.funcao==="cont"?"selected":""}>Contratos, orçamento ou finanças</option></select></label></div>`:"";
+    return `<fieldset style="border:1px solid var(--line);border-radius:8px;padding:12px;margin:0 0 10px;min-width:0"><legend style="padding:0 6px;font-weight:600;font-size:13px;max-width:100%">${esc(c[1])}</legend>
+     <label style="margin-right:16px"><input type="radio" name="q-${c[0]}" data-cq="${c[0]}" value="n" ${v==="n"?"checked":""}> Não</label><label><input type="radio" name="q-${c[0]}" data-cq="${c[0]}" value="s" ${v==="s"?"checked":""}> Sim</label>${extra}${atual}</fieldset>`}).join("");
+  const res=r.unanswered?`<div class="note">Responda as ${r.unanswered} pergunta(s) restantes para ver o resultado.</div>`:`<div style="display:flex;gap:8px;align-items:center;margin-bottom:8px"><span class="pill ${r.tone}">${r.status}</span></div>
+   ${r.bl.length?`<h3>Sem acesso a</h3><ul class="pend">${r.bl.map(i=>`<li>${esc(GRUPOS[i])}</li>`).join("")}</ul>`:""}
+   ${r.rest.length?`<h3 style="margin-top:10px">Restrições</h3><ul class="pend">${r.rest.map(x=>`<li>${esc(x)}</li>`).join("")}</ul>`:""}
+   ${r.par.length?`<h3 style="margin-top:10px">Depende de parecer</h3><ul class="pend">${r.par.map(x=>`<li>${esc(x)}</li>`).join("")}</ul>`:""}
+   ${!r.bl.length&&!r.rest.length&&!r.par.length?`<div class="note">Nenhum vínculo declarado. Acesso liberado após a Administração aprovar.</div>`:""}`;
+  const q=decl.map((d,i)=>`<tr><td>${esc(d.n)}</td><td>${esc(GRUPOS[d.g])}</td><td style="min-width:220px"><span class="pill ${d.ok?"ok":d.tone}">${d.ok?"Aprovado":d.res}</span><br><span class="note">${esc(d.det)}</span></td><td>${d.ok?"":`<button class="btn sec sm" data-capr="${i}">Aprovar</button>`}</td></tr>`).join("");
+  return `<div class="grid"><div class="grid twoCol"><div class="panel"><h2>Declaração de conflito de interesses</h2>
+   <p class="sub">Preenchida por cada membro antes do primeiro acesso e renovada quando o grupo passar a analisar contratos ou licitações. O sistema só decide o que é objetivo e encaminha o restante para parecer.</p>
+   <div class="formrow"><label class="f grow">Nome completo<input id="c-nome" value="${esc(D.nome)}"></label><label class="f">Grupo temático<select id="c-g">${GRUPOS.map((g,i)=>`<option value="${i}" ${D.grupo===i?"selected":""}>${esc(g)}</option>`).join("")}</select></label></div>
+   ${qs}
+   <label class="chk" style="border:0"><input type="checkbox" id="c-termo" ${D.termo?"checked":""}><span>Li e assinei o Termo de confidencialidade e comunicarei qualquer mudança nesta declaração.</span></label>
+   <div class="actions" style="margin-top:10px"><button class="btn" id="c-send">Enviar declaração</button></div>
+   ${D.msg?`<div class="${D.msg.startsWith("Declaração enviada")?"okmsg":"warn"}">${esc(D.msg)}</div>`:""}</div>
+   <div class="panel" style="align-self:start"><h3>Resultado desta declaração</h3>${res}</div></div>
+  <div class="panel"><h2>Fila de análise da Administração</h2><p class="sub">Alcione Gomes aprova ou encaminha para parecer. Cada decisão fica na trilha de auditoria.</p>
+   <div class="scroll"><table><thead><tr><th>Membro</th><th>Grupo</th><th>Resultado</th><th></th></tr></thead><tbody>${q}</tbody></table></div></div></div>`;
+}
+view.addEventListener("input",e=>{if(e.target.dataset.rk!==undefined)REL[e.target.dataset.rk]=e.target.value;if(e.target.id==="c-nome")D.nome=e.target.value;if(e.target.id==="c-org")D.orgao=e.target.value});
+view.addEventListener("change",e=>{
+  const t=e.target,id=t.id||"";
+  if(t.dataset.cq!==undefined){D.q[t.dataset.cq]=t.value;D.msg="";render();return}
+  if(t.dataset.ca!==undefined){const a=D.areas[t.dataset.ca],v=+t.value;D.areas[t.dataset.ca]=t.checked?[...a,v]:a.filter(x=>x!==v);D.msg="";render();return}
+  if(id==="c-g"){D.grupo=+t.value}
+  if(id==="c-fun"){D.funcao=t.value;D.msg="";render()}
+  if(id==="c-termo")D.termo=t.checked;
+  if(id==="c-org"||id==="c-nome")return;
+});
+view.addEventListener("click",e=>{
+  if(e.target.dataset.capr!==undefined){decl[+e.target.dataset.capr].ok=true;render();return}
+  if(e.target.id==="c-send"){const r=confRes();
+    if(!D.nome.trim()){D.msg="Informe o nome completo.";render();return}
+    if(r.unanswered){D.msg="Responda todas as perguntas antes de enviar.";render();return}
+    if(!D.termo){D.msg="Marque a assinatura do Termo de confidencialidade.";render();return}
+    const det=[...r.bl.map(i=>"Bloqueado em "+GRUPOS[i]),...r.rest,...r.par].join(" · ")||"Sem vínculos declarados.";
+    decl.unshift({n:D.nome.trim(),g:D.grupo,res:r.status,tone:r.tone,ok:false,det});
+    D.msg="Declaração enviada para análise da Administração.";D.nome="";D.q={};D.areas={forn:[],par:[],cargo:[]};D.orgao="";D.termo=false;render()}
+});
+
+function render(){
+  const op=tab==="rel"?[...view.querySelectorAll("details.blk")].map(d=>d.open):[];
+  view.innerHTML={dash,of:ofView,gen:genView,aut:autView,rel:relView,risk:riskView,team:teamView,conf:confView}[tab]();
+  if(tab==="rel"&&op.length===BLOCOS.length+1)view.querySelectorAll("details.blk").forEach((d,i)=>{d.open=op[i]});
+  if(tab==="rel")view.querySelectorAll("details.blk").forEach((d,bi)=>d.querySelectorAll("input:not([type=file]),textarea,select:not([data-bst])").forEach((el,k)=>{const key=relG+"|"+bi+"|"+k;el.dataset.rk=key;if(REL[key]!==undefined)el.value=REL[key]}));
+  document.querySelectorAll("#tabs button").forEach(b=>b.setAttribute("aria-selected",b.dataset.tab===tab));
+}
+$("#tabs").addEventListener("click",e=>{const b=e.target.closest("button");if(b){tab=b.dataset.tab;render()}});
+view.addEventListener("click",e=>{
+  const c=e.target.closest(".cellbtn");if(c){sel=[+c.dataset.g,+c.dataset.b];render();return}
+  const o=e.target.closest("[data-open]");if(o){relG=+o.dataset.open;tab="rel";render();return}
+  const r=e.target.closest("[data-resp]");if(r){const x=oficios.find(z=>z.n===r.dataset.resp);if(x){x.s="respondido";bump(x.g,x.bl,3,3)}render();return}
+  const vv=e.target.closest("[data-ver]");if(vv){const n=vv.dataset.ver;OPEN.has(n)?OPEN.delete(n):OPEN.add(n);render();return}
+  const ar=e.target.closest("[data-addrow]");if(ar){const k=relG+"|"+ar.dataset.addrow;ROWS[k]=(ROWS[k]||(ar.dataset.addrow==="2"?2:1))+1;render();return}
+  if(e.target.id==="of-add"){const a=$("#of-a").value.trim();if(!a){$("#of-a").focus();return}
+    const env=new Date($("#of-d").value+"T00:00:00");oficios.push({n:`${String(oficios.length+1).padStart(3,"0")}/2026`,g:+$("#of-g").value,a,env,prazo:addBiz(env,5),s:"aberto",anexos:[],txt:"",bl:[]});render();return}
+  if(e.target.id==="rk-add"){const d=$("#rk-d").value.trim();if(!d){$("#rk-d").focus();return}
+    riscos.push({g:+$("#rk-g").value,p:$("#rk-p").value,d,pr:+$("#rk-pr").value,im:+$("#rk-im").value,r:$("#rk-r").value||"A definir",pz:$("#rk-z").value||"–"});render();return}
+});
+view.addEventListener("change",e=>{
+  if(e.target.id==="setst"&&sel){matrix[sel[0]][sel[1]]=+e.target.value;render();return}
+  if(e.target.id==="relg"){relG=+e.target.value;render();return}
+  if(e.target.dataset.rk!==undefined&&e.target.tagName==="SELECT")REL[e.target.dataset.rk]=e.target.value;
+  if(e.target.dataset.attach!==undefined){const k=relG+"|"+e.target.dataset.attach,b=+e.target.dataset.attach;ATT[k]=(ATT[k]||[]).concat([...e.target.files].map(f=>f.name));if(matrix[relG][b]<2)matrix[relG][b]=2;render();return}
+  if(e.target.dataset.bst!==undefined){matrix[relG][+e.target.dataset.bst]=+e.target.value;render();return}
+  if(e.target.dataset.respfile!==undefined){const x=oficios.find(z=>z.n===e.target.dataset.respfile);if(x){x.anexos=x.anexos.concat([...e.target.files].map(f=>f.name));x.s="respondido";bump(x.g,x.bl,3,3)}render();return}
+});
+render();
+/* ===== Botão de fundo escuro (paleta azul) ===== */
+(function(){
+  const root=document.documentElement,btn=document.querySelector("#theme-btn");
+  const isDark=()=>root.dataset.theme?root.dataset.theme==="dark":matchMedia("(prefers-color-scheme: dark)").matches;
+  const paint=()=>{const d=isDark();btn.textContent=d?"☀ Fundo claro":"◐ Fundo escuro";btn.setAttribute("aria-pressed",String(d))};
+  try{const t=localStorage.getItem("tema");if(t)root.dataset.theme=t}catch(_){}
+  btn.addEventListener("click",()=>{const n=isDark()?"light":"dark";root.dataset.theme=n;try{localStorage.setItem("tema",n)}catch(_){}paint()});
+  paint();
+})();
+</script>
+
+</body>
+</html>
