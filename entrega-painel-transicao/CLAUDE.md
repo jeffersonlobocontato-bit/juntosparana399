@@ -64,4 +64,4 @@ npm test        # roda tests/fluxos.test.cjs (18 verificações)
 5. Storage privado para anexos, trilha de auditoria, exportação do ofício em PDF e Word com timbre.
 6. Módulos que faltam: riscos por ponto crítico com checklist por secretaria, Plano dos 100 dias, atos do dia 1, relatório consolidado automático (até 30 páginas).
 
-Mais prompts prontos em `PROMPTS.md`.
+Mais prompts prontos em `PROMPTS.md`. A lista completa do que falta para entrar no ar está em `CHECKLIST.md`.

@@ -8,6 +8,7 @@ Este pacote traz o protótipo do Painel da Transição, o contexto do projeto e 
 |---|---|
 | `painel-transicao.html` | O protótipo. Abre com duplo clique no navegador. |
 | `CLAUDE.md` | Contexto e regras do projeto. O Claude lê este arquivo primeiro. |
+| `CHECKLIST.md` | O que precisa ser feito, em ordem, para o painel funcionar de verdade. |
 | `PROMPTS.md` | Textos prontos para colar no Claude. |
 | `docs/ESPECIFICACAO.md` | Resumo do Kit de Transição, fluxos, perfis e regras de negócio. |
 | `docs/AUTORIDADES.md` | Titulares das secretarias, com fontes e o aviso de que não estão conferidos. |
