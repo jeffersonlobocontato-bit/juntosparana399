@@ -2,7 +2,7 @@
 
 | Arquivo | O que é |
 |---|---|
-| `dados-iniciais.json` | Os dados que já vêm preenchidos no protótipo: 11 grupos × 8 blocos, 10 ofícios de exemplo, 4 riscos de exemplo, 32 autoridades (não conferidas), 3 declarações de exemplo e as duas equipes de transição do Decreto nº 15.659 (10 indicados do governador eleito e 13 integrantes da Comissão de Transição do governo atual). |
+| `dados-iniciais.json` | O estado inicial do painel: 11 grupos × 8 blocos todos como "Não solicitado", sem ofícios, riscos nem declarações, a base de 32 autoridades (não conferidas) e as duas equipes de transição do Decreto nº 15.659 (10 indicados do governador eleito e 13 integrantes da Comissão de Transição do governo atual). |
 
 ## Como usar
 1. Abra `painel-transicao.html` no navegador.

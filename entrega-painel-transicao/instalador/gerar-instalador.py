@@ -218,7 +218,7 @@ O que é
 -------
 Um instalador de arquivo único (instalar-painel-transicao.py) que coloca o projeto
 completo no seu computador: o painel, o contexto para o Claude, o tutorial, o checklist,
-o rascunho do banco, os testes e os dados que já vêm preenchidos.
+o rascunho do banco, os testes e o estado inicial do painel (equipes do decreto e autoridades).
 
 Como instalar
 -------------

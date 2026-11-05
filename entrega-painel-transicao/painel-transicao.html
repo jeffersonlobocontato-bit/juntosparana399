@@ -150,7 +150,7 @@ td input{width:100%;min-width:90px}
 <div class="wrap">
   <header class="top">
     <div class="brand"><b>Painel da Transição</b><span>Governo do Paraná · mandato 2027–2030 · ambiente reservado</span></div>
-    <div class="who"><button class="btn sec sm" id="theme-btn" type="button" aria-pressed="false">◐ Fundo escuro</button><span class="chip ghost">Acesso em duas etapas ativo</span><span class="chip">Alcione Gomes · Administração</span></div>
+    <div class="who"><button class="btn sec sm" id="theme-btn" type="button" aria-pressed="false">◐ Fundo escuro</button><span class="chip ghost">Acesso em duas etapas: previsto</span><span class="chip">Alcione Gomes · Administração</span></div>
   </header>
   <nav class="tabs" role="tablist" id="tabs">
     <button role="tab" data-tab="dash" aria-selected="true">Painel geral</button>
@@ -165,7 +165,7 @@ td input{width:100%;min-width:90px}
     <button role="tab" data-tab="conf" aria-selected="false">Conflito de interesses</button>
     <button role="tab" data-tab="dados" aria-selected="false">Salvar e restaurar</button>
   </nav>
-  <div class="demo">Protótipo para validação do desenho. Nomes, números e datas iniciais são exemplos. O que você digitar fica salvo só neste navegador; use a aba Salvar e restaurar para guardar tudo em um arquivo.</div>
+  <div class="demo">Protótipo em validação. O painel começa vazio, com as equipes do Decreto nº 15.659 e a base de autoridades (levantada na imprensa, ainda não conferida). O que você digitar fica salvo só neste navegador; use a aba Salvar e restaurar para guardar tudo em um arquivo.</div>
   <main id="view"></main>
 </div>
 
@@ -181,9 +181,10 @@ const PONTOS={
  "Riscos de informação e sistemas":["Apagamento ou retenção de dados","Informação incompleta","Vazamento"],
  "Riscos políticos e institucionais":["Transição tardia ou limitada","LOA votada sem ajustes","Nomeações para mandatos fixos","Expectativas públicas"]};
 const FASES=[["0 Preparação","antes da eleição"],["1 Instalação","semanas 1 e 2"],["2 Diagnóstico","semanas 2 a 6"],["3 Consolidação","semanas 6 a 8"],["4 Pré-posse","semanas 8 a 10"],["5 Cem dias","6/1 a 15/4"]];
-const FASE_ATUAL=1;
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const today=new Date();today.setHours(0,0,0,0);
+const RESULTADO=new Date(2026,9,4);
+const FASE_ATUAL=(()=>{if(today>=new Date(2027,0,6))return 5;const sem=Math.floor((today-RESULTADO)/(7*864e5))+1;return sem<=2?1:sem<=6?2:sem<=8?3:4})();
 const addDays=(d,n)=>{const x=new Date(d);x.setDate(x.getDate()+n);return x};
 const addBiz=(d,n)=>{const x=new Date(d);while(n>0){x.setDate(x.getDate()+1);if(x.getDay()%6)n--}return x};
 const fmt=d=>d.toLocaleDateString("pt-BR",{day:"2-digit",month:"2-digit"});
@@ -191,24 +192,9 @@ const fmtL=d=>d.toLocaleDateString("pt-BR",{day:"2-digit",month:"short",year:"nu
 const POSSE=new Date(2027,0,6);
 const diasPosse=Math.max(0,Math.round((POSSE-today)/864e5));
 
-const matrix=GRUPOS.map((g,gi)=>BLOCOS.map((b,bi)=>(gi*5+bi*3+((gi*bi)%4))%6));
-const oficios=[
- [3,"Fluxo de caixa diário de dezembro a março",8,"abertos"],
- [3,"Estoque de medicamentos e insumos",8,"aberto"],
- [0,"Restos a pagar por credor e data",9,"aberto"],
- [0,"Estoque e serviço da dívida em 2027",6,"respondido"],
- [4,"Contratos de transporte escolar e merenda",7,"aberto"],
- [5,"Contratos de alimentação do sistema prisional",3,"aberto"],
- [9,"Ações judiciais acima de R$ 10 milhões",4,"respondido"],
- [2,"Cálculo atuarial e cronograma de aportes",2,"aberto"],
- [6,"Obras paralisadas e motivos",1,"aberto"],
- [1,"Concursos em andamento ou homologados",10,"respondido"]
-].map((o,i)=>{const env=addDays(today,-o[2]);return{n:`${String(i+1).padStart(3,"0")}/2026`,g:o[0],a:o[1],env,prazo:addBiz(env,5),s:o[3]==="respondido"?"respondido":"aberto",anexos:[],txt:"",bl:[]}});
-let riscos=[
- {g:3,p:"Serviços de saúde (estoque de medicamentos)",d:"Contrato de fornecimento de medicamentos vence em 15/1/2027 sem licitação concluída",pr:3,im:3,r:"Coordenador do grupo Saúde",pz:"20/12"},
- {g:0,p:"Caixa insuficiente em janeiro",d:"Folha de dezembro e 13º pagos com receita prevista de 2027",pr:2,im:3,r:"Núcleo fiscal",pz:"06/01"},
- {g:4,p:"Início do ano letivo",d:"Transporte escolar sem contrato vigente para fevereiro",pr:2,im:2,r:"Coordenador do grupo Educação",pz:"15/01"},
- {g:7,p:"Perda de conhecimento",d:"Exoneração em massa de comissionados em dezembro",pr:1,im:2,r:"Núcleo de gestão e pessoas",pz:"15/02"}];
+const matrix=GRUPOS.map(()=>BLOCOS.map(()=>0));
+const oficios=[];
+let riscos=[];
 const classe=n=>n>=6?["Crítico","crit"]:n>=3?["Alto","high"]:["Moderado","mod"];
 let sel=null,relG=3;
 /* Equipes do Decreto nº 15.659 (DOE de 4/11/2026), conforme o texto informado pelo usuário. Conferir no Diário Oficial. */
@@ -239,7 +225,7 @@ function dash(){
     return `<tr><th scope="row" style="white-space:normal;min-width:150px;color:var(--ink)">${esc(g)}</th>${cells}<td style="min-width:90px"><div class="bar" title="${pct}% validado"><i style="width:${pct}%"></i></div></td></tr>`}).join("");
   const heads=BLOCOS.map((b,i)=>`<th class="col" title="${esc(b)}">B${i+1}</th>`).join("");
   const legend=ST.map((s,i)=>`<span><i class="sw st-${i}">${s.i}</i>${s.k}</span>`).join("");
-  const venc=oficios.filter(o=>o.s==="aberto").sort((a,b)=>a.prazo-b.prazo).slice(0,5).map(o=>{const late=o.prazo<today;return `<li><div><b>${esc(GRUPOS[o.g])}</b><small>${esc(o.a)}</small></div><span class="pill ${late?"late":"open"}">${late?"venceu ":"vence "}${fmt(o.prazo)}</span></li>`}).join("");
+  const venc=oficios.filter(o=>o.s==="aberto").sort((a,b)=>a.prazo-b.prazo).slice(0,5).map(o=>{const late=o.prazo<today;return `<li><div><b>${esc(GRUPOS[o.g])}</b><small>${esc(o.a)}</small></div><span class="pill ${late?"late":"open"}">${late?"venceu ":"vence "}${fmt(o.prazo)}</span></li>`}).join("")||`<li class="note">Nenhum ofício aguardando resposta. Registre ofícios na aba Gerador de ofícios.</li>`;
   const rc=riscos.filter(r=>r.pr*r.im>=6).map(r=>`<li><div><b>${esc(GRUPOS[r.g])}</b><small>${esc(r.d)}</small></div><span class="pill crit">${r.pr*r.im}</span></li>`).join("")||`<li class="note">Nenhum risco crítico registrado.</li>`;
   let det="";
   if(sel){const [g,b]=sel;det=`<div class="detail"><div><b>${esc(GRUPOS[g])}</b><br><span class="note">Bloco ${b+1} · ${esc(BLOCOS[b])}</span></div>
@@ -273,7 +259,7 @@ function ofView(){
    <label class="f">Data do envio<input id="of-d" type="date" value="${today.toISOString().slice(0,10)}"></label>
    <button class="btn" id="of-add">Registrar ofício</button></div>
    <p class="note" style="margin-top:-6px">Para gerar o texto completo, use a aba Gerador de ofícios.</p>
-   <div class="scroll"><table><thead><tr><th>Nº</th><th>Grupo</th><th>Assunto</th><th>Enviado</th><th>Prazo</th><th>Situação</th><th></th></tr></thead><tbody>${rows}</tbody></table></div></div></div>`;
+   <div class="scroll"><table><thead><tr><th>Nº</th><th>Grupo</th><th>Assunto</th><th>Enviado</th><th>Prazo</th><th>Situação</th><th></th></tr></thead><tbody>${rows}</tbody></table></div>${rows?"":`<p class="note" style="margin-top:10px">Nenhum ofício registrado ainda. Gere o primeiro na aba Gerador de ofícios ou registre pelo campo acima.</p>`}</div></div>`;
 }
 const T1=["Servidores efetivos","Cargos em comissão e funções gratificadas","Temporários (PSS) com contrato vencendo até 30/6/2027","Terceirizados","Aposentadorias previstas em 2027"];
 const T2=["Dotação autorizada 2026","Empenhado / liquidado / pago em 2026","Restos a pagar inscritos","Despesas obrigatórias de 2027","Proposta da LOA 2027"];
@@ -311,7 +297,7 @@ function riskView(){
   <label class="f">Responsável<input id="rk-r" placeholder="Nome ou núcleo"></label>
   <label class="f">Prazo<input id="rk-z" placeholder="dd/mm"></label>
   <button class="btn" id="rk-add">Adicionar ao mapa</button></div>
-  <div class="scroll"><table><thead><tr><th>Nota</th><th>Grupo</th><th>Risco</th><th>Prob.×Imp.</th><th>Responsável</th><th>Prazo</th><th>Destino</th></tr></thead><tbody>${rows}</tbody></table></div></div></div>`;
+  <div class="scroll"><table><thead><tr><th>Nota</th><th>Grupo</th><th>Risco</th><th>Prob.×Imp.</th><th>Responsável</th><th>Prazo</th><th>Destino</th></tr></thead><tbody>${rows}</tbody></table></div>${rows?"":`<p class="note" style="margin-top:10px">Nenhum risco registrado ainda. Escolha o ponto crítico acima e adicione ao mapa.</p>`}</div></div>`;
 }
 function teamView(){
   const P=[["Administração (Alcione Gomes)","Aprova acessos, vê tudo, gerencia usuários e termos","✓","✓","✓","✓"],
@@ -326,7 +312,7 @@ function teamView(){
   <p class="sub">Só entra quem foi aprovado pela Administração e assinou o Termo de confidencialidade. Servidores do governo em exercício não têm conta: o que eles entregam é registrado pela equipe.</p>
   <div class="grid kpis" style="margin-bottom:16px"><div class="kpi"><div class="n">${termos.assinados}/${termos.total}</div><div class="l">termos assinados</div></div>
   <div class="kpi bad"><div class="n">${termos.total-termos.assinados}</div><div class="l">acessos bloqueados até assinar</div></div>
-  <div class="kpi"><div class="n">100%</div><div class="l">ações registradas em auditoria</div></div></div>
+  </div>
   <div class="scroll"><table class="roles"><thead><tr><th>Perfil</th><th>O que faz</th><th>Painel</th><th>Ofícios</th><th>Riscos</th><th>Usuários</th></tr></thead><tbody>${rows}</tbody></table></div>
   <p class="note" style="margin-top:12px">Também previsto: declaração de conflito de interesses no cadastro, marca d'água nos downloads, canal restrito para registrar indícios de irregularidade (visível só à coordenação) e devolução ou destruição dos dados ao fim da transição.</p></div></div>`;
 }
@@ -503,10 +489,7 @@ view.addEventListener("click",e=>{
 
 /* ===== Declaração de conflito de interesses ===== */
 const D={nome:"",grupo:0,q:{},areas:{forn:[],par:[],cargo:[]},orgao:"",funcao:"oper",termo:false,msg:""};
-const decl=[
- {n:"Membro A (exemplo)",g:3,res:"Liberado",tone:"ok",ok:true,det:"Sem vínculos declarados."},
- {n:"Membro B (exemplo)",g:4,res:"Liberado com restrições",tone:"high",ok:false,det:"Bloqueado no grupo Educação: sócio de empresa de transporte escolar."},
- {n:"Membro C (exemplo)",g:8,res:"Liberado com restrições",tone:"high",ok:false,det:"Servidor cedido ao governo atual, função operacional. Acesso técnico, sem dossiê do próprio órgão."}];
+const decl=[];
 const CQ=[
  ["forn","Você, seu cônjuge ou parente de até 2º grau é sócio, dirigente, empregado ou consultor de empresa com contrato, convênio ou concessão com o Estado?","Em quais áreas há esse vínculo?"],
  ["par","Você tem parente de até 3º grau em cargo de direção ou chefia em alguma secretaria ou estatal?","Em quais áreas?"],
@@ -553,7 +536,7 @@ function confView(){
    ${D.msg?`<div class="${D.msg.startsWith("Declaração enviada")?"okmsg":"warn"}">${esc(D.msg)}</div>`:""}</div>
    <div class="panel" style="align-self:start"><h3>Resultado desta declaração</h3>${res}</div></div>
   <div class="panel"><h2>Fila de análise da Administração</h2><p class="sub">Alcione Gomes aprova ou encaminha para parecer. Cada decisão fica na trilha de auditoria.</p>
-   <div class="scroll"><table><thead><tr><th>Membro</th><th>Grupo</th><th>Resultado</th><th></th></tr></thead><tbody>${q}</tbody></table></div></div></div>`;
+   <div class="scroll"><table><thead><tr><th>Membro</th><th>Grupo</th><th>Resultado</th><th></th></tr></thead><tbody>${q}</tbody></table></div>${q?"":`<p class="note" style="margin-top:10px">Nenhuma declaração enviada ainda.</p>`}</div></div>`;
 }
 view.addEventListener("input",e=>{if(e.target.dataset.rk!==undefined)REL[e.target.dataset.rk]=e.target.value;if(e.target.id==="c-nome")D.nome=e.target.value;if(e.target.id==="c-org")D.orgao=e.target.value});
 view.addEventListener("change",e=>{
@@ -637,7 +620,7 @@ view.addEventListener("click",e=>{const t=e.target;
     EQ[sd].push(base);EQMSG=`${n} foi adicionado(a) à lista.`;render()}});
 
 /* ===== Salvar e restaurar dados (arquivo JSON + salvamento automático no navegador) ===== */
-const CHAVE="painel-transicao-v1";
+const CHAVE="painel-transicao-v2",CHAVE_ANTIGA="painel-transicao-v1";
 const pad2=n=>String(n).padStart(2,"0"),ymd=d=>`${d.getFullYear()}-${pad2(d.getMonth()+1)}-${pad2(d.getDate())}`;
 const pdt=s=>{const m=/^(\d{4})-(\d{2})-(\d{2})$/.exec(String(s));if(!m)return null;const d=new Date(+m[1],+m[2]-1,+m[3]);return isNaN(d)?null:d};
 function exportState(){return {app:"painel-transicao",versao:1,exportadoEm:new Date().toISOString(),
@@ -674,6 +657,7 @@ function importState(o){
   G.num=String(oficios.length+1).padStart(3,"0")}
 const INICIAL=JSON.stringify(exportState());
 let SALVA_OK=true,DMSG="",RESET1=false;
+const temAntigo=()=>{try{return !!localStorage.getItem(CHAVE_ANTIGA)}catch(_){return false}};
 function salva(){try{localStorage.setItem(CHAVE,JSON.stringify(exportState()))}catch(_){SALVA_OK=false}}
 try{const sv=localStorage.getItem(CHAVE);if(sv){const o=JSON.parse(sv);if(!validar(o))importState(o)}}catch(_){SALVA_OK=false}
 let tmSalva=0;view.addEventListener("input",()=>{clearTimeout(tmSalva);tmSalva=setTimeout(salva,400)});
@@ -689,7 +673,8 @@ function dadosView(){
   <div class="actions" style="margin-top:10px"><button class="btn sec" id="d-rest">Restaurar do texto</button></div>
   <h3 style="margin-top:18px">Neste navegador</h3>
   <p class="note">${SALVA_OK?"Salvamento automático ligado: o painel guarda os dados neste navegador a cada mudança e os recupera ao abrir de novo.":"Salvamento automático indisponível neste navegador (armazenamento bloqueado). Use o arquivo JSON para não perder dados."} Se limpar os dados do navegador, eles somem. O arquivo JSON é a cópia segura.</p>
-  <div class="actions"><button class="btn sec" id="d-reset">${RESET1?"Confirmar: voltar aos dados de exemplo":"Voltar aos dados de exemplo"}</button></div></div></div>`}
+  ${temAntigo()?`<div class="box-old warn" style="margin:10px 0"><b>Há dados salvos por uma versão anterior deste painel neste navegador.</b> Eles incluem exemplos que foram removidos. Se você registrou algo seu ali, recupere abaixo.<div class="actions" style="margin:8px 0 0"><button class="btn sec sm" id="d-antigo">Recuperar dados da versão anterior</button></div></div>`:""}
+  <div class="actions"><button class="btn sec" id="d-reset">${RESET1?"Confirmar: apagar tudo e voltar ao estado inicial":"Apagar tudo e voltar ao estado inicial"}</button></div></div></div>`}
 function restaura(txt){
   let o;try{o=JSON.parse(txt)}catch(_){DMSG="Erro: o texto não é um JSON válido.";return false}
   const e=validar(o);if(e){DMSG="Erro: "+e;return false}
@@ -700,7 +685,8 @@ view.addEventListener("click",e=>{
   if(id==="d-down"){try{const b=new Blob([JSON.stringify(exportState(),null,2)],{type:"application/json"});const a=document.createElement("a");a.href=URL.createObjectURL(b);a.download=`painel-transicao-dados-${ymd(new Date())}.json`;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),1500);DMSG="Arquivo gerado. Se o download não começar neste ambiente, use Copiar dados."}catch(_){DMSG="Não foi possível gerar o arquivo. Use Copiar dados."}render();return}
   if(id==="d-copy"){const t=JSON.stringify(exportState(),null,2);const fim=ok=>{DMSG=ok?"Dados copiados. Cole em um arquivo .json ou na outra instalação.":"Não foi possível copiar automaticamente. Use Baixar dados.";render()};try{navigator.clipboard.writeText(t).then(()=>fim(true),()=>fim(false))}catch(_){fim(false)}return}
   if(id==="d-rest"){restaura($("#d-txt").value);render();return}
-  if(id==="d-reset"){if(!RESET1){RESET1=true;render();return}RESET1=false;importState(JSON.parse(INICIAL));try{localStorage.removeItem(CHAVE)}catch(_){}DMSG="Dados de exemplo restaurados.";render()}
+  if(id==="d-antigo"){try{restaura(localStorage.getItem(CHAVE_ANTIGA));localStorage.removeItem(CHAVE_ANTIGA)}catch(_){DMSG="Não foi possível ler os dados antigos."}render();return}
+  if(id==="d-reset"){if(!RESET1){RESET1=true;render();return}RESET1=false;importState(JSON.parse(INICIAL));try{localStorage.removeItem(CHAVE)}catch(_){}DMSG="Painel limpo: voltou ao estado inicial.";render()}
 });
 view.addEventListener("change",e=>{if(e.target.id==="d-file"&&e.target.files[0]){e.target.files[0].text().then(t=>{restaura(t);render()}).catch(()=>{DMSG="Erro: não foi possível ler o arquivo.";render()})}});
 

@@ -1,269 +1,121 @@
 {
   "app": "painel-transicao",
   "versao": 1,
-  "exportadoEm": "2026-11-05T17:53:25.740Z",
+  "exportadoEm": "2026-11-05T18:11:33.870Z",
   "matriz": [
     [
       0,
-      3,
       0,
-      3,
       0,
-      3,
       0,
-      3
-    ],
-    [
-      5,
-      3,
-      1,
-      5,
-      5,
-      3,
-      1,
-      5
-    ],
-    [
-      4,
-      3,
-      4,
-      3,
-      4,
-      3,
-      4,
-      3
-    ],
-    [
-      3,
-      3,
-      5,
-      1,
-      3,
-      3,
-      5,
-      1
-    ],
-    [
-      2,
-      5,
-      2,
-      5,
-      2,
-      5,
-      2,
-      5
-    ],
-    [
-      1,
-      5,
-      3,
-      1,
-      1,
-      5,
-      3,
-      1
+      0,
+      0,
+      0,
+      0
     ],
     [
       0,
-      5,
       0,
-      5,
       0,
-      5,
       0,
-      5
+      0,
+      0,
+      0,
+      0
     ],
     [
-      5,
-      5,
-      1,
-      3,
-      5,
-      5,
-      1,
-      3
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
     ],
     [
-      4,
-      1,
-      4,
-      1,
-      4,
-      1,
-      4,
-      1
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
     ],
     [
-      3,
-      1,
-      5,
-      3,
-      3,
-      1,
-      5,
-      3
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
     ],
     [
-      2,
-      1,
-      2,
-      1,
-      2,
-      1,
-      2,
-      1
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
     ]
   ],
-  "oficios": [
-    {
-      "n": "001/2026",
-      "g": 3,
-      "a": "Fluxo de caixa diário de dezembro a março",
-      "env": "2026-10-28",
-      "prazo": "2026-11-04",
-      "s": "aberto",
-      "anexos": [],
-      "txt": "",
-      "bl": []
-    },
-    {
-      "n": "002/2026",
-      "g": 3,
-      "a": "Estoque de medicamentos e insumos",
-      "env": "2026-10-28",
-      "prazo": "2026-11-04",
-      "s": "aberto",
-      "anexos": [],
-      "txt": "",
-      "bl": []
-    },
-    {
-      "n": "003/2026",
-      "g": 0,
-      "a": "Restos a pagar por credor e data",
-      "env": "2026-10-27",
-      "prazo": "2026-11-03",
-      "s": "aberto",
-      "anexos": [],
-      "txt": "",
-      "bl": []
-    },
-    {
-      "n": "004/2026",
-      "g": 0,
-      "a": "Estoque e serviço da dívida em 2027",
-      "env": "2026-10-30",
-      "prazo": "2026-11-06",
-      "s": "respondido",
-      "anexos": [],
-      "txt": "",
-      "bl": []
-    },
-    {
-      "n": "005/2026",
-      "g": 4,
-      "a": "Contratos de transporte escolar e merenda",
-      "env": "2026-10-29",
-      "prazo": "2026-11-05",
-      "s": "aberto",
-      "anexos": [],
-      "txt": "",
-      "bl": []
-    },
-    {
-      "n": "006/2026",
-      "g": 5,
-      "a": "Contratos de alimentação do sistema prisional",
-      "env": "2026-11-02",
-      "prazo": "2026-11-09",
-      "s": "aberto",
-      "anexos": [],
-      "txt": "",
-      "bl": []
-    },
-    {
-      "n": "007/2026",
-      "g": 9,
-      "a": "Ações judiciais acima de R$ 10 milhões",
-      "env": "2026-11-01",
-      "prazo": "2026-11-06",
-      "s": "respondido",
-      "anexos": [],
-      "txt": "",
-      "bl": []
-    },
-    {
-      "n": "008/2026",
-      "g": 2,
-      "a": "Cálculo atuarial e cronograma de aportes",
-      "env": "2026-11-03",
-      "prazo": "2026-11-10",
-      "s": "aberto",
-      "anexos": [],
-      "txt": "",
-      "bl": []
-    },
-    {
-      "n": "009/2026",
-      "g": 6,
-      "a": "Obras paralisadas e motivos",
-      "env": "2026-11-04",
-      "prazo": "2026-11-11",
-      "s": "aberto",
-      "anexos": [],
-      "txt": "",
-      "bl": []
-    },
-    {
-      "n": "010/2026",
-      "g": 1,
-      "a": "Concursos em andamento ou homologados",
-      "env": "2026-10-26",
-      "prazo": "2026-11-02",
-      "s": "respondido",
-      "anexos": [],
-      "txt": "",
-      "bl": []
-    }
-  ],
-  "riscos": [
-    {
-      "g": 3,
-      "p": "Serviços de saúde (estoque de medicamentos)",
-      "d": "Contrato de fornecimento de medicamentos vence em 15/1/2027 sem licitação concluída",
-      "pr": 3,
-      "im": 3,
-      "r": "Coordenador do grupo Saúde",
-      "pz": "20/12"
-    },
-    {
-      "g": 0,
-      "p": "Caixa insuficiente em janeiro",
-      "d": "Folha de dezembro e 13º pagos com receita prevista de 2027",
-      "pr": 2,
-      "im": 3,
-      "r": "Núcleo fiscal",
-      "pz": "06/01"
-    },
-    {
-      "g": 4,
-      "p": "Início do ano letivo",
-      "d": "Transporte escolar sem contrato vigente para fevereiro",
-      "pr": 2,
-      "im": 2,
-      "r": "Coordenador do grupo Educação",
-      "pz": "15/01"
-    },
-    {
-      "g": 7,
-      "p": "Perda de conhecimento",
-      "d": "Exoneração em massa de comissionados em dezembro",
-      "pr": 1,
-      "im": 2,
-      "r": "Núcleo de gestão e pessoas",
-      "pz": "15/02"
-    }
-  ],
+  "oficios": [],
+  "riscos": [],
   "autoridades": [
     {
       "o": "Casa Civil",
@@ -586,37 +438,12 @@
       "obs": "Titular a levantar."
     }
   ],
-  "declaracoes": [
-    {
-      "n": "Membro A (exemplo)",
-      "g": 3,
-      "res": "Liberado",
-      "tone": "ok",
-      "ok": true,
-      "det": "Sem vínculos declarados."
-    },
-    {
-      "n": "Membro B (exemplo)",
-      "g": 4,
-      "res": "Liberado com restrições",
-      "tone": "high",
-      "ok": false,
-      "det": "Bloqueado no grupo Educação: sócio de empresa de transporte escolar."
-    },
-    {
-      "n": "Membro C (exemplo)",
-      "g": 8,
-      "res": "Liberado com restrições",
-      "tone": "high",
-      "ok": false,
-      "det": "Servidor cedido ao governo atual, função operacional. Acesso técnico, sem dossiê do próprio órgão."
-    }
-  ],
+  "declaracoes": [],
   "relatorio": {},
   "anexosRelatorio": {},
   "linhasExtras": {},
   "gerador": {
-    "num": "011",
+    "num": "001",
     "dec": "15.659/2026",
     "mail": "[e-mail da coordenação da transição]",
     "sig": "eleito",

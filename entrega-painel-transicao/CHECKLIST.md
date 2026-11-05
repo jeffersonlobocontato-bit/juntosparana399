@@ -54,7 +54,7 @@ Use em ordem e marque `[x]` conforme avança. Os itens com 🔒 não podem ser p
 - [ ] Carga inicial: grupos, membros, autoridades conferidas e modelos de ofício revisados.
 - [ ] **Treinar a equipe** (30 minutos por perfil) e entregar um guia curto de uso.
 - [ ] Piloto com **um grupo** (por exemplo, Saúde) por alguns dias, com um ofício real.
-- [ ] Remover os dados de exemplo e o aviso de protótipo.
+- [ ] Retirar o aviso de protótipo do topo do painel. (Os dados de exemplo já foram removidos: o painel começa vazio.)
 - [ ] Definir o canal de suporte: quem a equipe chama quando travar.
 
 ## 8. Rotina durante a transição

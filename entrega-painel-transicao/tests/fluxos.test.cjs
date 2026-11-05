@@ -22,6 +22,24 @@ const confere = (nome, ok, detalhe = '') => {
   await p.goto('file://' + ARQ);
 
   const aba = t => p.click(`#tabs button[data-tab=${t}]`);
+  // 0. Estado inicial: sem dados de exemplo
+  {
+    const ab = t => p.click(`#tabs button[data-tab=${t}]`);
+    await ab('of');   confere('inicial: nenhum ofício de exemplo', (await p.locator('#view tbody tr').count()) === 0);
+    await ab('risk'); confere('inicial: nenhum risco de exemplo', (await p.locator('#view tbody tr').count()) === 0);
+    await ab('conf'); confere('inicial: nenhuma declaração de exemplo', (await p.locator('#view tbody tr').count()) === 0);
+    await ab('dash');
+    const rotulos = await p.locator('.cellbtn').evaluateAll(l => l.map(x => x.getAttribute('aria-label')));
+    confere('inicial: as 88 células da matriz estão "Não solicitado"', rotulos.length === 88 && rotulos.every(x => /Não solicitado/.test(x)));
+    confere('inicial: indicadores zerados (ofícios, riscos)', (await p.locator('.kpi .n').allInnerTexts()).slice(0, 4).join(',') === '0%,0,0,0');
+    let achou = false;
+    for (const t of ['dash', 'of', 'gen', 'aut', 'rel', 'risk', 'team', 'eqm', 'eqr', 'conf', 'dados']) {
+      await ab(t); if (/\(exemplo\)|Membro [ABC]\b/.test(await p.locator('#view').innerText())) achou = true;
+    }
+    confere('inicial: nenhuma tela traz "exemplo" nem Membro A/B/C', !achou);
+    await ab('dash');
+  }
+
   const texto = async s => (await p.locator(s).first().innerText());
   const celula = (g, b) => p.locator(`.cellbtn[data-g="${g}"][data-b="${b}"]`).getAttribute('aria-label');
   const linhas = s => p.locator(s).count();
@@ -45,7 +63,7 @@ const confere = (nome, ok, detalhe = '') => {
   await aba('dash');
   confere('painel: bloco passou a "Solicitado"', /Solicitado/.test(await celula(0, 0)), await celula(0, 0));
   await aba('of');
-  await p.setInputFiles('tr:has-text("011/2026") input[data-respfile]',
+  await p.setInputFiles('tr:has-text("001/2026") input[data-respfile]',
     [{ name: 'resposta.pdf', mimeType: 'application/pdf', buffer: Buffer.from('x') }]);
   confere('ofícios: anexo da resposta aparece', /resposta\.pdf/.test(await texto('#view')));
   await aba('dash');
@@ -69,7 +87,7 @@ const confere = (nome, ok, detalhe = '') => {
   await p.click('#rk-add');
   confere('riscos: nova linha no mapa', (await linhas('#view tbody tr')) === r0 + 1);
   await aba('dash');
-  confere('painel: riscos críticos aumentaram', (await p.locator('.kpi .n').allInnerTexts())[3] === '3');
+  confere('painel: riscos críticos aumentaram', (await p.locator('.kpi .n').allInnerTexts())[3] === '1');
 
   // 4. Autoridades alimentam o gerador
   await aba('aut'); const a0 = await linhas('#aut-body tr');
@@ -137,7 +155,7 @@ const confere = (nome, ok, detalhe = '') => {
   confere('dados: exportação traz as duas equipes', dados.equipes && dados.equipes.moro.length === 11 && dados.equipes.ratinho.length === 13);
   await p.reload();                                   // o salvamento automático deve devolver tudo
   await aba('of');
-  confere('dados: salvamento automático sobrevive ao recarregar', /011\/2026/.test(await texto('#view')));
+  confere('dados: salvamento automático sobrevive ao recarregar', /001\/2026/.test(await texto('#view')));
   await aba('risk');
   confere('dados: risco continua após recarregar', /Risco de teste/.test(await texto('#view')));
 
@@ -166,6 +184,22 @@ const confere = (nome, ok, detalhe = '') => {
   await p2.click('#tabs button[data-tab=risk]');
   confere('dados: "voltar aos dados de exemplo" limpa o que foi restaurado', !/Risco de teste/.test(await p2.locator('#view').innerText()));
   await ctx2.close();
+
+  // dados salvos por versão anterior (chave v1) podem ser recuperados, mas não aparecem sozinhos
+  const ctx3 = await browser.newContext();
+  const p3 = await ctx3.newPage();
+  await p3.route('**/*', r => (r.request().url().startsWith('file:') ? r.continue() : r.abort()));
+  await p3.goto('file://' + ARQ);
+  await p3.evaluate(() => { const o = exportState(); o.riscos = [{ g: 3, p: 'x', d: 'Risco antigo', pr: 3, im: 3, r: '', pz: '' }]; localStorage.setItem('painel-transicao-v1', JSON.stringify(o)); });
+  await p3.reload();
+  await p3.click('#tabs button[data-tab=risk]');
+  confere('versão anterior: dados antigos não reaparecem sozinhos', !/Risco antigo/.test(await p3.locator('#view').innerText()));
+  await p3.click('#tabs button[data-tab=dados]');
+  confere('versão anterior: painel oferece recuperar', (await p3.locator('#d-antigo').count()) === 1);
+  await p3.click('#d-antigo');
+  await p3.click('#tabs button[data-tab=risk]');
+  confere('versão anterior: recuperação traz os dados', /Risco antigo/.test(await p3.locator('#view').innerText()));
+  await ctx3.close();
 
   confere('sem erros de JavaScript', erros.length === 0, erros.join(' | '));
   await browser.close();

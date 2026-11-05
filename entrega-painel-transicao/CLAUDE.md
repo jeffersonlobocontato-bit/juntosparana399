@@ -9,7 +9,7 @@ Ela organiza o trabalho descrito no **Kit de Transição de Governo Estadual** (
 
 ## Estado atual
 - **`painel-transicao.html`** é um **protótipo clicável em um único arquivo** (HTML + CSS + JavaScript puro, sem bibliotecas e sem build). Abre com duplo clique no navegador.
-- **Os dados iniciais são de exemplo.** O painel guarda o que for digitado **neste navegador** (salvamento automático) e permite **baixar e restaurar tudo em um arquivo JSON** (aba "Salvar e restaurar"). Um instantâneo dos dados iniciais está em `dados/dados-iniciais.json`. Anexos guardam só o nome do arquivo, não o conteúdo.
+- **O painel começa vazio**: sem ofícios, riscos, declarações nem situações na matriz. Já vêm preenchidas só as **equipes do Decreto nº 15.659** e a **base de autoridades** (levantada na imprensa, não conferida). O painel guarda o que for digitado **neste navegador** (salvamento automático) e permite **baixar e restaurar tudo em um arquivo JSON** (aba "Salvar e restaurar"). Um instantâneo do estado inicial está em `dados/dados-iniciais.json`. Anexos guardam só o nome do arquivo, não o conteúdo.
 - Nada foi ligado a banco, login ou servidor. O rascunho do banco está em `supabase/schema.sql`. Ele passou em 18 verificações de acesso num PostgreSQL local (`supabase/teste_rls.sql`, ver `supabase/TESTE.md`), mas **não foi testado no Supabase real nem revisado por especialista em segurança**.
 
 ### O que o protótipo já faz (testado em navegador, ver `tests/`)

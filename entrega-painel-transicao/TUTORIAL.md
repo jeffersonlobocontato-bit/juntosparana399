@@ -53,7 +53,7 @@ O painel guarda o que você digita **no navegador em que está trabalhando**. Pa
 2. Mande esse arquivo junto com o instalador.
 3. Na máquina nova, abra `painel-transicao.html`, vá em **Salvar e restaurar** e carregue o arquivo.
 
-Sem esse passo, o que foi digitado só no navegador de origem **não vai junto** com o instalador, que leva apenas os dados de exemplo (`dados/dados-iniciais.json`). Anexos viajam só com o nome do arquivo, então envie os documentos à parte.
+Sem esse passo, o que foi digitado só no navegador de origem **não vai junto** com o instalador, que leva apenas o estado inicial (`dados/dados-iniciais.json`: equipes do decreto e autoridades). Anexos viajam só com o nome do arquivo, então envie os documentos à parte.
 
 ## Antes de começar
 1. Uma conta no Claude (claude.ai). Para o Caminho B, um plano que inclua o Claude Code.
@@ -64,7 +64,7 @@ Sem esse passo, o que foi digitado só no navegador de origem **não vai junto**
 
 ## Caminho A: ver e melhorar pelo Claude no navegador (sem instalar nada)
 
-**1. Veja o protótipo.** Dê dois cliques em `painel-transicao.html`. Ele abre no navegador. Navegue pelas abas. Os dados são de exemplo e somem ao recarregar.
+**1. Veja o protótipo.** Dê dois cliques em `painel-transicao.html`. Ele abre no navegador. Navegue pelas abas. Ele começa vazio, com as equipes do decreto e a lista de autoridades. O que você digitar fica salvo só no seu navegador.
 
 **2. Crie um projeto no Claude.**
 1. Entre em claude.ai e crie um **Projeto** novo chamado "Painel da Transição".
@@ -151,6 +151,6 @@ Fazer só depois de a coordenação aprovar o desenho do protótipo.
 
 ## Cuidados com informação
 
-- O protótipo não deve receber dados reais de pessoas ou documentos sigilosos. Use dados de exemplo.
+- O protótipo não deve receber documentos sigilosos nem dados pessoais além dos nomes e contatos da equipe. Para testar, use dados fictícios.
 - A lista de titulares em `docs/AUTORIDADES.md` veio de notícias e **precisa de conferência oficial** antes de qualquer ofício sair.
 - As regras de conflito de interesses e a autoria do ofício (Governador eleito ou coordenação) são **sugestões**. Peça parecer jurídico antes de adotá-las.
