@@ -9,7 +9,7 @@ Ela organiza o trabalho descrito no **Kit de Transição de Governo Estadual** (
 
 ## Estado atual
 - **`painel-transicao.html`** é um **protótipo clicável em um único arquivo** (HTML + CSS + JavaScript puro, sem bibliotecas e sem build). Abre com duplo clique no navegador.
-- **Todos os dados são de exemplo e ficam só na memória do navegador.** Recarregar a página apaga tudo. Anexos guardam só o nome do arquivo.
+- **Os dados iniciais são de exemplo.** O painel guarda o que for digitado **neste navegador** (salvamento automático) e permite **baixar e restaurar tudo em um arquivo JSON** (aba "Salvar e restaurar"). Um instantâneo dos dados iniciais está em `dados/dados-iniciais.json`. Anexos guardam só o nome do arquivo, não o conteúdo.
 - Nada foi ligado a banco, login ou servidor. O rascunho do banco está em `supabase/schema.sql`. Ele passou em 18 verificações de acesso num PostgreSQL local (`supabase/teste_rls.sql`, ver `supabase/TESTE.md`), mas **não foi testado no Supabase real nem revisado por especialista em segurança**.
 
 ### O que o protótipo já faz (testado em navegador, ver `tests/`)
@@ -20,7 +20,7 @@ Ela organiza o trabalho descrito no **Kit de Transição de Governo Estadual** (
 - **Relatório da secretaria:** 8 blocos com tabelas do kit, anexos, linhas extras e situação por bloco.
 - **Mapa de riscos:** nota = probabilidade (1–3) × impacto (1–3). 6 a 9 crítico, 3 a 4 alto, 1 a 2 moderado.
 - **Conflito de interesses:** declaração com 7 perguntas e resultado (liberado, com restrições, aguardando parecer).
-- **Equipe e acessos** e botão de **fundo escuro** com paleta azul.
+- **Equipe e acessos**, botão de **fundo escuro** com paleta azul e aba **Salvar e restaurar** (exporta e importa todos os dados em JSON, com validação).
 
 ### Ligações entre abas (mantenha)
 - Registrar ofício → aparece em *Ofícios e prazos*, soma nos indicadores, marca os blocos do modelo como "Solicitado" na matriz.
@@ -44,6 +44,7 @@ Ela organiza o trabalho descrito no **Kit de Transição de Governo Estadual** (
 - **Autoridades:** nada está "Conferido". Só marque como conferido quando o usuário confirmar no Diário Oficial.
 - **Nunca coloque dados reais de pessoas no protótipo, nem senhas, chaves ou `.env` em arquivos versionados.**
 - Acessibilidade: todo controle com rótulo, foco visível, cor nunca como único sinal (as células da matriz têm símbolo e texto).
+- Ao mudar a estrutura dos dados (ofícios, riscos, autoridades etc.), **atualize `exportState`, `validar` e `importState` e o número da `versao`**, para não quebrar os backups já guardados.
 - Depois de qualquer mudança, **rode os testes** (`tests/`) e confira as ligações entre abas.
 
 ## Como rodar e testar
@@ -56,6 +57,9 @@ npm install && npx playwright install chromium
 npm test        # roda tests/fluxos.test.cjs (18 verificações)
 ```
 
+## Instalador
+`python3 instalador/gerar-instalador.py` gera `dist/instalar-painel-transicao.py` (o projeto inteiro em um arquivo, conferido por SHA-256) mais `instalar-windows.bat` e `LEIA-ME.txt`. Rode de novo sempre que o projeto mudar. O instalador nunca sobrescreve `dados/` e, ao atualizar, guarda uma cópia da pasta atual. `dist/` e `dados/meus-*.json` ficam fora do Git.
+
 ## Próximos passos sugeridos (ordem)
 1. Revisar o protótipo com a coordenação (campos, nomes de bloco, fluxos).
 2. Conferir os titulares em `docs/AUTORIDADES.md` no Diário Oficial.
@@ -64,4 +68,4 @@ npm test        # roda tests/fluxos.test.cjs (18 verificações)
 5. Storage privado para anexos, trilha de auditoria, exportação do ofício em PDF e Word com timbre.
 6. Módulos que faltam: riscos por ponto crítico com checklist por secretaria, Plano dos 100 dias, atos do dia 1, relatório consolidado automático (até 30 páginas).
 
-Mais prompts prontos em `PROMPTS.md`. A lista completa do que falta para entrar no ar está em `CHECKLIST.md`.
+Comandos prontos do Claude Code neste projeto (`.claude/commands/`): `/primeiro-contato`, `/testar` e `/restaurar-dados`. Mais prompts prontos em `PROMPTS.md`. A lista completa do que falta para entrar no ar está em `CHECKLIST.md`.

@@ -1,0 +1,625 @@
+{
+  "app": "painel-transicao",
+  "versao": 1,
+  "exportadoEm": "2026-11-05T17:34:51.741Z",
+  "matriz": [
+    [
+      0,
+      3,
+      0,
+      3,
+      0,
+      3,
+      0,
+      3
+    ],
+    [
+      5,
+      3,
+      1,
+      5,
+      5,
+      3,
+      1,
+      5
+    ],
+    [
+      4,
+      3,
+      4,
+      3,
+      4,
+      3,
+      4,
+      3
+    ],
+    [
+      3,
+      3,
+      5,
+      1,
+      3,
+      3,
+      5,
+      1
+    ],
+    [
+      2,
+      5,
+      2,
+      5,
+      2,
+      5,
+      2,
+      5
+    ],
+    [
+      1,
+      5,
+      3,
+      1,
+      1,
+      5,
+      3,
+      1
+    ],
+    [
+      0,
+      5,
+      0,
+      5,
+      0,
+      5,
+      0,
+      5
+    ],
+    [
+      5,
+      5,
+      1,
+      3,
+      5,
+      5,
+      1,
+      3
+    ],
+    [
+      4,
+      1,
+      4,
+      1,
+      4,
+      1,
+      4,
+      1
+    ],
+    [
+      3,
+      1,
+      5,
+      3,
+      3,
+      1,
+      5,
+      3
+    ],
+    [
+      2,
+      1,
+      2,
+      1,
+      2,
+      1,
+      2,
+      1
+    ]
+  ],
+  "oficios": [
+    {
+      "n": "001/2026",
+      "g": 3,
+      "a": "Fluxo de caixa diário de dezembro a março",
+      "env": "2026-10-28",
+      "prazo": "2026-11-04",
+      "s": "aberto",
+      "anexos": [],
+      "txt": "",
+      "bl": []
+    },
+    {
+      "n": "002/2026",
+      "g": 3,
+      "a": "Estoque de medicamentos e insumos",
+      "env": "2026-10-28",
+      "prazo": "2026-11-04",
+      "s": "aberto",
+      "anexos": [],
+      "txt": "",
+      "bl": []
+    },
+    {
+      "n": "003/2026",
+      "g": 0,
+      "a": "Restos a pagar por credor e data",
+      "env": "2026-10-27",
+      "prazo": "2026-11-03",
+      "s": "aberto",
+      "anexos": [],
+      "txt": "",
+      "bl": []
+    },
+    {
+      "n": "004/2026",
+      "g": 0,
+      "a": "Estoque e serviço da dívida em 2027",
+      "env": "2026-10-30",
+      "prazo": "2026-11-06",
+      "s": "respondido",
+      "anexos": [],
+      "txt": "",
+      "bl": []
+    },
+    {
+      "n": "005/2026",
+      "g": 4,
+      "a": "Contratos de transporte escolar e merenda",
+      "env": "2026-10-29",
+      "prazo": "2026-11-05",
+      "s": "aberto",
+      "anexos": [],
+      "txt": "",
+      "bl": []
+    },
+    {
+      "n": "006/2026",
+      "g": 5,
+      "a": "Contratos de alimentação do sistema prisional",
+      "env": "2026-11-02",
+      "prazo": "2026-11-09",
+      "s": "aberto",
+      "anexos": [],
+      "txt": "",
+      "bl": []
+    },
+    {
+      "n": "007/2026",
+      "g": 9,
+      "a": "Ações judiciais acima de R$ 10 milhões",
+      "env": "2026-11-01",
+      "prazo": "2026-11-06",
+      "s": "respondido",
+      "anexos": [],
+      "txt": "",
+      "bl": []
+    },
+    {
+      "n": "008/2026",
+      "g": 2,
+      "a": "Cálculo atuarial e cronograma de aportes",
+      "env": "2026-11-03",
+      "prazo": "2026-11-10",
+      "s": "aberto",
+      "anexos": [],
+      "txt": "",
+      "bl": []
+    },
+    {
+      "n": "009/2026",
+      "g": 6,
+      "a": "Obras paralisadas e motivos",
+      "env": "2026-11-04",
+      "prazo": "2026-11-11",
+      "s": "aberto",
+      "anexos": [],
+      "txt": "",
+      "bl": []
+    },
+    {
+      "n": "010/2026",
+      "g": 1,
+      "a": "Concursos em andamento ou homologados",
+      "env": "2026-10-26",
+      "prazo": "2026-11-02",
+      "s": "respondido",
+      "anexos": [],
+      "txt": "",
+      "bl": []
+    }
+  ],
+  "riscos": [
+    {
+      "g": 3,
+      "p": "Serviços de saúde (estoque de medicamentos)",
+      "d": "Contrato de fornecimento de medicamentos vence em 15/1/2027 sem licitação concluída",
+      "pr": 3,
+      "im": 3,
+      "r": "Coordenador do grupo Saúde",
+      "pz": "20/12"
+    },
+    {
+      "g": 0,
+      "p": "Caixa insuficiente em janeiro",
+      "d": "Folha de dezembro e 13º pagos com receita prevista de 2027",
+      "pr": 2,
+      "im": 3,
+      "r": "Núcleo fiscal",
+      "pz": "06/01"
+    },
+    {
+      "g": 4,
+      "p": "Início do ano letivo",
+      "d": "Transporte escolar sem contrato vigente para fevereiro",
+      "pr": 2,
+      "im": 2,
+      "r": "Coordenador do grupo Educação",
+      "pz": "15/01"
+    },
+    {
+      "g": 7,
+      "p": "Perda de conhecimento",
+      "d": "Exoneração em massa de comissionados em dezembro",
+      "pr": 1,
+      "im": 2,
+      "r": "Núcleo de gestão e pessoas",
+      "pz": "15/02"
+    }
+  ],
+  "autoridades": [
+    {
+      "o": "Casa Civil",
+      "sg": "CC",
+      "nm": "João Carlos Ortega",
+      "tr": "M",
+      "tit": "Secretário(a) de Estado da Casa Civil",
+      "g": 9,
+      "st": "imp",
+      "obs": "Constava na lista anterior a abril/2026."
+    },
+    {
+      "o": "Secretaria da Fazenda",
+      "sg": "SEFA",
+      "nm": "Renê Garcia",
+      "tr": "M",
+      "tit": "Secretário(a) de Estado da Fazenda",
+      "g": 0,
+      "st": "imp",
+      "obs": "Permaneceu no cargo segundo a imprensa."
+    },
+    {
+      "o": "Controladoria-Geral do Estado",
+      "sg": "CGE",
+      "nm": "Raul Siqueira",
+      "tr": "M",
+      "tit": "Controlador(a)-Geral do Estado",
+      "g": 9,
+      "st": "imp",
+      "obs": "Permaneceu no cargo segundo a imprensa."
+    },
+    {
+      "o": "Procuradoria-Geral do Estado",
+      "sg": "PGE",
+      "nm": "Letícia Ferreira da Silva",
+      "tr": "F",
+      "tit": "Procurador(a)-Geral do Estado",
+      "g": 9,
+      "st": "imp",
+      "obs": ""
+    },
+    {
+      "o": "Secretaria da Saúde",
+      "sg": "SESA",
+      "nm": "César Neves",
+      "tr": "M",
+      "tit": "Secretário(a) de Estado da Saúde",
+      "g": 3,
+      "st": "imp",
+      "obs": "Nomeado após a saída do titular anterior, em 2026."
+    },
+    {
+      "o": "Secretaria da Educação",
+      "sg": "SEED",
+      "nm": "Roni Miranda",
+      "tr": "M",
+      "tit": "Secretário(a) de Estado da Educação",
+      "g": 4,
+      "st": "imp",
+      "obs": ""
+    },
+    {
+      "o": "Secretaria da Segurança Pública",
+      "sg": "SESP",
+      "nm": "Saulo de Tarso Sanson Silva",
+      "tr": "M",
+      "tit": "Secretário(a) de Estado da Segurança Pública",
+      "g": 5,
+      "st": "imp",
+      "obs": "Assumiu em 7/4/2026, a princípio de forma interina. Confirmar se foi efetivado."
+    },
+    {
+      "o": "Secretaria da Infraestrutura e Logística",
+      "sg": "SEIL",
+      "nm": "Fernando Furiatti",
+      "tr": "M",
+      "tit": "Secretário(a) de Estado da Infraestrutura e Logística",
+      "g": 6,
+      "st": "imp",
+      "obs": ""
+    },
+    {
+      "o": "Secretaria da Agricultura e do Abastecimento",
+      "sg": "SEAB",
+      "nm": "Natalino Avance de Souza",
+      "tr": "M",
+      "tit": "Secretário(a) de Estado da Agricultura e do Abastecimento",
+      "g": 7,
+      "st": "imp",
+      "obs": ""
+    },
+    {
+      "o": "Secretaria do Desenvolvimento Sustentável",
+      "sg": "SEDEST",
+      "nm": "Everton Souza",
+      "tr": "M",
+      "tit": "Secretário(a) de Estado do Desenvolvimento Sustentável",
+      "g": 7,
+      "st": "imp",
+      "obs": "Anunciado em 10/4/2026."
+    },
+    {
+      "o": "Secretaria do Desenvolvimento Social e Família",
+      "sg": "SEDEF",
+      "nm": "",
+      "tr": "?",
+      "tit": "Secretário(a) de Estado do Desenvolvimento Social e Família",
+      "g": 8,
+      "st": "def",
+      "obs": "O titular anterior deixou o cargo em abril/2026. Substituto não localizado."
+    },
+    {
+      "o": "Secretaria da Administração e da Previdência",
+      "sg": "SEAP",
+      "nm": "",
+      "tr": "?",
+      "tit": "Secretário(a) de Estado da Administração e da Previdência",
+      "g": 1,
+      "st": "def",
+      "obs": "Titular anterior deixou o cargo em abril/2026. Há lista antiga citando Elisandro Pires Frigo. Confirmar."
+    },
+    {
+      "o": "Secretaria do Planejamento",
+      "sg": "SEPL",
+      "nm": "Clemeson Aparecido da Silva",
+      "tr": "M",
+      "tit": "Secretário(a) de Estado do Planejamento",
+      "g": 1,
+      "st": "imp",
+      "obs": "A grafia do nome varia entre as fontes (Clemeson/Clemersom)."
+    },
+    {
+      "o": "Secretaria das Cidades",
+      "sg": "SECID",
+      "nm": "Fernando Giacobo",
+      "tr": "M",
+      "tit": "Secretário(a) de Estado das Cidades",
+      "g": 6,
+      "st": "imp",
+      "obs": ""
+    },
+    {
+      "o": "Secretaria do Turismo",
+      "sg": "SETU",
+      "nm": "Luciano Bartolomeu",
+      "tr": "M",
+      "tit": "Secretário(a) de Estado do Turismo",
+      "g": null,
+      "st": "imp",
+      "obs": ""
+    },
+    {
+      "o": "Secretaria do Esporte",
+      "sg": "SEES",
+      "nm": "Walmir da Silva Matos",
+      "tr": "M",
+      "tit": "Secretário(a) de Estado do Esporte",
+      "g": null,
+      "st": "imp",
+      "obs": ""
+    },
+    {
+      "o": "Secretaria da Cultura",
+      "sg": "SEEC",
+      "nm": "Luciana Casagrande Pereira",
+      "tr": "F",
+      "tit": "Secretário(a) de Estado da Cultura",
+      "g": null,
+      "st": "imp",
+      "obs": ""
+    },
+    {
+      "o": "Secretaria da Mulher, Igualdade Racial e Pessoa Idosa",
+      "sg": "",
+      "nm": "Mariana Neris",
+      "tr": "F",
+      "tit": "Secretário(a) de Estado da Mulher, Igualdade Racial e Pessoa Idosa",
+      "g": 8,
+      "st": "imp",
+      "obs": "Anunciada em 10/4/2026."
+    },
+    {
+      "o": "Secretaria da Indústria, Comércio e Serviços",
+      "sg": "SEIC",
+      "nm": "Felipe Flessak",
+      "tr": "M",
+      "tit": "Secretário(a) de Estado da Indústria, Comércio e Serviços",
+      "g": null,
+      "st": "imp",
+      "obs": ""
+    },
+    {
+      "o": "Secretaria do Trabalho, Qualificação e Renda",
+      "sg": "SETR",
+      "nm": "Willian Porfirio",
+      "tr": "M",
+      "tit": "Secretário(a) de Estado do Trabalho, Qualificação e Renda",
+      "g": 8,
+      "st": "imp",
+      "obs": ""
+    },
+    {
+      "o": "Secretaria da Justiça e Cidadania",
+      "sg": "SEJU",
+      "nm": "Fabiana Cristina de Campos Romani",
+      "tr": "F",
+      "tit": "Secretário(a) de Estado da Justiça e Cidadania",
+      "g": 5,
+      "st": "imp",
+      "obs": "Citada em reportagem sobre a substituição do titular anterior. Data da nomeação não confirmada."
+    },
+    {
+      "o": "Casa Militar",
+      "sg": "",
+      "nm": "Sérgio Vieira Benício",
+      "tr": "M",
+      "tit": "Chefe da Casa Militar",
+      "g": 5,
+      "st": "imp",
+      "obs": "Constava na lista anterior a abril/2026."
+    },
+    {
+      "o": "Secretaria da Ciência, Tecnologia e Ensino Superior",
+      "sg": "SETI",
+      "nm": "Aldo Bona",
+      "tr": "M",
+      "tit": "Secretário(a) de Estado da Ciência, Tecnologia e Ensino Superior",
+      "g": 4,
+      "st": "imp",
+      "obs": "Constava na lista anterior a abril/2026."
+    },
+    {
+      "o": "Secretaria da Inovação, Modernização e Transformação Digital",
+      "sg": "",
+      "nm": "",
+      "tr": "?",
+      "tit": "Secretário(a) de Estado da Inovação, Modernização e Transformação Digital",
+      "g": null,
+      "st": "def",
+      "obs": "O titular anterior deixou o cargo em abril/2026."
+    },
+    {
+      "o": "Chefia de Gabinete do Governador",
+      "sg": "",
+      "nm": "",
+      "tr": "?",
+      "tit": "Chefe de Gabinete do Governador",
+      "g": 9,
+      "st": "def",
+      "obs": "O titular anterior deixou o cargo em abril/2026."
+    },
+    {
+      "o": "Secretaria da Comunicação Social",
+      "sg": "",
+      "nm": "",
+      "tr": "?",
+      "tit": "Secretário(a) de Estado da Comunicação Social",
+      "g": null,
+      "st": "def",
+      "obs": ""
+    },
+    {
+      "o": "Paranaprevidência",
+      "sg": "",
+      "nm": "",
+      "tr": "?",
+      "tit": "Diretor(a)-Presidente da Paranaprevidência",
+      "g": 2,
+      "st": "def",
+      "obs": "Titular a levantar."
+    },
+    {
+      "o": "Sanepar",
+      "sg": "",
+      "nm": "",
+      "tr": "?",
+      "tit": "Diretor(a)-Presidente da Sanepar",
+      "g": 10,
+      "st": "def",
+      "obs": "Titular a levantar."
+    },
+    {
+      "o": "Copel",
+      "sg": "",
+      "nm": "",
+      "tr": "?",
+      "tit": "Diretor(a)-Presidente da Copel",
+      "g": 10,
+      "st": "def",
+      "obs": "Titular a levantar. O Estado é acionista."
+    },
+    {
+      "o": "Celepar",
+      "sg": "",
+      "nm": "",
+      "tr": "?",
+      "tit": "Diretor(a)-Presidente da Celepar",
+      "g": 10,
+      "st": "def",
+      "obs": "Titular a levantar."
+    },
+    {
+      "o": "Portos do Paraná",
+      "sg": "",
+      "nm": "",
+      "tr": "?",
+      "tit": "Diretor(a)-Presidente dos Portos do Paraná",
+      "g": 10,
+      "st": "def",
+      "obs": "Titular a levantar."
+    },
+    {
+      "o": "Detran-PR",
+      "sg": "",
+      "nm": "",
+      "tr": "?",
+      "tit": "Diretor(a)-Geral do Detran-PR",
+      "g": null,
+      "st": "def",
+      "obs": "Titular a levantar."
+    }
+  ],
+  "declaracoes": [
+    {
+      "n": "Membro A (exemplo)",
+      "g": 3,
+      "res": "Liberado",
+      "tone": "ok",
+      "ok": true,
+      "det": "Sem vínculos declarados."
+    },
+    {
+      "n": "Membro B (exemplo)",
+      "g": 4,
+      "res": "Liberado com restrições",
+      "tone": "high",
+      "ok": false,
+      "det": "Bloqueado no grupo Educação: sócio de empresa de transporte escolar."
+    },
+    {
+      "n": "Membro C (exemplo)",
+      "g": 8,
+      "res": "Liberado com restrições",
+      "tone": "high",
+      "ok": false,
+      "det": "Servidor cedido ao governo atual, função operacional. Acesso técnico, sem dossiê do próprio órgão."
+    }
+  ],
+  "relatorio": {},
+  "anexosRelatorio": {},
+  "linhasExtras": {},
+  "gerador": {
+    "num": "011",
+    "dec": "___/2026",
+    "mail": "[e-mail da coordenação da transição]",
+    "sig": "eleito",
+    "dias": 5
+  }
+}

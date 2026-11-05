@@ -6,7 +6,8 @@
   "type": "commonjs",
   "scripts": {
     "servir": "python3 -m http.server 8000",
-    "test": "node tests/fluxos.test.cjs"
+    "test": "node tests/fluxos.test.cjs",
+    "instalador": "python3 instalador/gerar-instalador.py"
   },
   "devDependencies": {
     "playwright": "^1.40.0"

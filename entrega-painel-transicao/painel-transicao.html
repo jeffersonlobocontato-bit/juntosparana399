@@ -156,8 +156,9 @@ td input{width:100%;min-width:90px}
     <button role="tab" data-tab="risk" aria-selected="false">Mapa de riscos</button>
     <button role="tab" data-tab="team" aria-selected="false">Equipe e acessos</button>
     <button role="tab" data-tab="conf" aria-selected="false">Conflito de interesses</button>
+    <button role="tab" data-tab="dados" aria-selected="false">Salvar e restaurar</button>
   </nav>
-  <div class="demo">Protótipo para validação do desenho. Todos os nomes, números e datas abaixo são exemplos e nada é salvo.</div>
+  <div class="demo">Protótipo para validação do desenho. Nomes, números e datas iniciais são exemplos. O que você digitar fica salvo só neste navegador; use a aba Salvar e restaurar para guardar tudo em um arquivo.</div>
   <main id="view"></main>
 </div>
 
@@ -560,12 +561,76 @@ view.addEventListener("click",e=>{
     D.msg="Declaração enviada para análise da Administração.";D.nome="";D.q={};D.areas={forn:[],par:[],cargo:[]};D.orgao="";D.termo=false;render()}
 });
 
+/* ===== Salvar e restaurar dados (arquivo JSON + salvamento automático no navegador) ===== */
+const CHAVE="painel-transicao-v1";
+const pad2=n=>String(n).padStart(2,"0"),ymd=d=>`${d.getFullYear()}-${pad2(d.getMonth()+1)}-${pad2(d.getDate())}`;
+const pdt=s=>{const m=/^(\d{4})-(\d{2})-(\d{2})$/.exec(String(s));if(!m)return null;const d=new Date(+m[1],+m[2]-1,+m[3]);return isNaN(d)?null:d};
+function exportState(){return {app:"painel-transicao",versao:1,exportadoEm:new Date().toISOString(),
+  matriz:matrix.map(r=>r.slice()),oficios:oficios.map(o=>({...o,env:ymd(o.env),prazo:ymd(o.prazo)})),riscos:riscos.map(r=>({...r})),
+  autoridades:AUT.map(a=>({...a})),declaracoes:decl.map(d=>({...d})),relatorio:{...REL},anexosRelatorio:{...ATT},linhasExtras:{...ROWS},
+  gerador:{num:G.num,dec:G.dec,mail:G.mail,sig:G.sig,dias:G.dias}}}
+function validar(o){
+  const gOk=x=>Number.isInteger(x)&&x>=0&&x<GRUPOS.length;
+  if(!o||typeof o!=="object"||o.app!=="painel-transicao"||o.versao!==1)return "O arquivo não é um backup do Painel da Transição (versão 1).";
+  if(!Array.isArray(o.matriz)||o.matriz.length!==GRUPOS.length||o.matriz.some(r=>!Array.isArray(r)||r.length!==BLOCOS.length||r.some(v=>!Number.isInteger(v)||v<0||v>5)))return "A matriz de situação do painel está inválida.";
+  if(!Array.isArray(o.oficios)||o.oficios.some(x=>!x||typeof x.n!=="string"||!gOk(x.g)||typeof x.a!=="string"||!pdt(x.env)||!pdt(x.prazo)||!["aberto","respondido"].includes(x.s)))return "A lista de ofícios está inválida.";
+  if(!Array.isArray(o.riscos)||o.riscos.some(r=>!r||!gOk(r.g)||![1,2,3].includes(r.pr)||![1,2,3].includes(r.im)||typeof r.d!=="string"))return "A lista de riscos está inválida.";
+  if(!Array.isArray(o.autoridades)||o.autoridades.some(a=>!a||typeof a.o!=="string"||typeof a.nm!=="string"||!ST_AUT[a.st]||!["M","F","?"].includes(a.tr)))return "A lista de autoridades está inválida.";
+  if(!Array.isArray(o.declaracoes)||o.declaracoes.some(d=>!d||typeof d.n!=="string"||!gOk(d.g)))return "A lista de declarações está inválida.";
+  return null}
+const S=v=>v==null?"":String(v);
+function importState(o){
+  matrix.forEach((r,i)=>r.splice(0,r.length,...o.matriz[i]));
+  oficios.splice(0,oficios.length,...o.oficios.map(x=>({n:x.n,g:x.g,a:x.a,env:pdt(x.env),prazo:pdt(x.prazo),s:x.s,anexos:Array.isArray(x.anexos)?x.anexos.map(S):[],txt:S(x.txt),bl:Array.isArray(x.bl)?x.bl.filter(Number.isInteger):[]})));
+  riscos=o.riscos.map(r=>({g:r.g,p:S(r.p),d:r.d,pr:r.pr,im:r.im,r:S(r.r),pz:S(r.pz)}));
+  AUT.splice(0,AUT.length,...o.autoridades.map(a=>({o:a.o,sg:S(a.sg),nm:a.nm,tr:a.tr,tit:S(a.tit),g:Number.isInteger(a.g)?a.g:null,st:a.st,obs:S(a.obs)})));
+  decl.splice(0,decl.length,...o.declaracoes.map(d=>({n:d.n,g:d.g,res:S(d.res),tone:["ok","high","late"].includes(d.tone)?d.tone:"high",ok:!!d.ok,det:S(d.det)})));
+  const limpa=(dst,src,f)=>{Object.keys(dst).forEach(k=>delete dst[k]);Object.entries(src||{}).forEach(([k,v])=>{const w=f(v);if(w!==undefined)dst[k]=w})};
+  limpa(REL,o.relatorio,v=>typeof v==="string"?v:undefined);
+  limpa(ATT,o.anexosRelatorio,v=>Array.isArray(v)?v.map(S):undefined);
+  limpa(ROWS,o.linhasExtras,v=>Number.isInteger(v)&&v>0&&v<200?v:undefined);
+  OPEN.clear();sel=null;setOrg(0);G.dirty=false;G.msg="";G.done=null;
+  const g=o.gerador||{};G.dec=S(g.dec)||G.dec;G.mail=S(g.mail)||G.mail;if(g.sig==="eleito"||g.sig==="coord")G.sig=g.sig;if(Number.isInteger(g.dias)&&g.dias>0&&g.dias<31)G.dias=g.dias;
+  G.num=String(oficios.length+1).padStart(3,"0")}
+const INICIAL=JSON.stringify(exportState());
+let SALVA_OK=true,DMSG="",RESET1=false;
+function salva(){try{localStorage.setItem(CHAVE,JSON.stringify(exportState()))}catch(_){SALVA_OK=false}}
+try{const sv=localStorage.getItem(CHAVE);if(sv){const o=JSON.parse(sv);if(!validar(o))importState(o)}}catch(_){SALVA_OK=false}
+let tmSalva=0;view.addEventListener("input",()=>{clearTimeout(tmSalva);tmSalva=setTimeout(salva,400)});
+function dadosView(){
+  const k=[[oficios.length,"ofícios"],[riscos.length,"riscos"],[AUT.length,"autoridades"],[decl.length,"declarações"],[Object.keys(ATT).reduce((n,x)=>n+ATT[x].length,0),"anexos do relatório (só nomes)"]];
+  return `<div class="grid"><div class="panel"><h2>Salvar e restaurar dados</h2>
+  <p class="sub">Tudo o que foi digitado nesta página pode ser guardado em um arquivo e levado para outro computador ou para o Claude de outra pessoa. O arquivo guarda ofícios (com o texto), riscos, autoridades, declarações, situação do painel e o que foi preenchido no relatório. Anexos entram só com o nome do arquivo, não com o conteúdo.</p>
+  <div class="grid kpis" style="margin-bottom:14px">${k.map(x=>`<div class="kpi"><div class="n">${x[0]}</div><div class="l">${x[1]}</div></div>`).join("")}</div>
+  <div class="actions"><button class="btn" id="d-down">Baixar dados (arquivo JSON)</button><button class="btn sec" id="d-copy">Copiar dados</button></div>
+  ${DMSG?`<div class="${DMSG.startsWith("Erro")||DMSG.startsWith("Não")?"warn":"okmsg"}" style="margin-bottom:12px">${esc(DMSG)}</div>`:""}
+  <div class="formrow"><label class="f grow">Restaurar de um arquivo<input type="file" id="d-file" accept=".json,application/json"></label></div>
+  <label class="f">Ou cole os dados aqui<textarea id="d-txt" placeholder='{"app":"painel-transicao", ...}'></textarea></label>
+  <div class="actions" style="margin-top:10px"><button class="btn sec" id="d-rest">Restaurar do texto</button></div>
+  <h3 style="margin-top:18px">Neste navegador</h3>
+  <p class="note">${SALVA_OK?"Salvamento automático ligado: o painel guarda os dados neste navegador a cada mudança e os recupera ao abrir de novo.":"Salvamento automático indisponível neste navegador (armazenamento bloqueado). Use o arquivo JSON para não perder dados."} Se limpar os dados do navegador, eles somem. O arquivo JSON é a cópia segura.</p>
+  <div class="actions"><button class="btn sec" id="d-reset">${RESET1?"Confirmar: voltar aos dados de exemplo":"Voltar aos dados de exemplo"}</button></div></div></div>`}
+function restaura(txt){
+  let o;try{o=JSON.parse(txt)}catch(_){DMSG="Erro: o texto não é um JSON válido.";return false}
+  const e=validar(o);if(e){DMSG="Erro: "+e;return false}
+  importState(o);salva();DMSG=`Dados restaurados: ${oficios.length} ofícios, ${riscos.length} riscos, ${AUT.length} autoridades.`;return true}
+view.addEventListener("click",e=>{
+  const id=e.target.id||"";
+  if(id!=="d-reset")RESET1=false;
+  if(id==="d-down"){try{const b=new Blob([JSON.stringify(exportState(),null,2)],{type:"application/json"});const a=document.createElement("a");a.href=URL.createObjectURL(b);a.download=`painel-transicao-dados-${ymd(new Date())}.json`;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),1500);DMSG="Arquivo gerado. Se o download não começar neste ambiente, use Copiar dados."}catch(_){DMSG="Não foi possível gerar o arquivo. Use Copiar dados."}render();return}
+  if(id==="d-copy"){const t=JSON.stringify(exportState(),null,2);const fim=ok=>{DMSG=ok?"Dados copiados. Cole em um arquivo .json ou na outra instalação.":"Não foi possível copiar automaticamente. Use Baixar dados.";render()};try{navigator.clipboard.writeText(t).then(()=>fim(true),()=>fim(false))}catch(_){fim(false)}return}
+  if(id==="d-rest"){restaura($("#d-txt").value);render();return}
+  if(id==="d-reset"){if(!RESET1){RESET1=true;render();return}RESET1=false;importState(JSON.parse(INICIAL));try{localStorage.removeItem(CHAVE)}catch(_){}DMSG="Dados de exemplo restaurados.";render()}
+});
+view.addEventListener("change",e=>{if(e.target.id==="d-file"&&e.target.files[0]){e.target.files[0].text().then(t=>{restaura(t);render()}).catch(()=>{DMSG="Erro: não foi possível ler o arquivo.";render()})}});
+
 function render(){
   const op=tab==="rel"?[...view.querySelectorAll("details.blk")].map(d=>d.open):[];
-  view.innerHTML={dash,of:ofView,gen:genView,aut:autView,rel:relView,risk:riskView,team:teamView,conf:confView}[tab]();
+  view.innerHTML={dash,of:ofView,gen:genView,aut:autView,rel:relView,risk:riskView,team:teamView,conf:confView,dados:dadosView}[tab]();
   if(tab==="rel"&&op.length===BLOCOS.length+1)view.querySelectorAll("details.blk").forEach((d,i)=>{d.open=op[i]});
   if(tab==="rel")view.querySelectorAll("details.blk").forEach((d,bi)=>d.querySelectorAll("input:not([type=file]),textarea,select:not([data-bst])").forEach((el,k)=>{const key=relG+"|"+bi+"|"+k;el.dataset.rk=key;if(REL[key]!==undefined)el.value=REL[key]}));
   document.querySelectorAll("#tabs button").forEach(b=>b.setAttribute("aria-selected",b.dataset.tab===tab));
+  salva();
 }
 $("#tabs").addEventListener("click",e=>{const b=e.target.closest("button");if(b){tab=b.dataset.tab;render()}});
 view.addEventListener("click",e=>{

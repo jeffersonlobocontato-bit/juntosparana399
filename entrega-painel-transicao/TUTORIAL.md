@@ -8,16 +8,39 @@ Este pacote traz o protótipo do Painel da Transição, o contexto do projeto e 
 |---|---|
 | `painel-transicao.html` | O protótipo. Abre com duplo clique no navegador. |
 | `CLAUDE.md` | Contexto e regras do projeto. O Claude lê este arquivo primeiro. |
+| `dados/` | Instantâneo dos dados que já vêm no protótipo (`dados-iniciais.json`) e onde guardar seus backups. |
+| `.claude/commands/` | Comandos prontos para o Claude Code: `/primeiro-contato`, `/testar`, `/restaurar-dados`. |
 | `CHECKLIST.md` | O que precisa ser feito, em ordem, para o painel funcionar de verdade. |
 | `PROMPTS.md` | Textos prontos para colar no Claude. |
 | `docs/ESPECIFICACAO.md` | Resumo do Kit de Transição, fluxos, perfis e regras de negócio. |
 | `docs/AUTORIDADES.md` | Titulares das secretarias, com fontes e o aviso de que não estão conferidos. |
 | `supabase/schema.sql` | Rascunho do banco de dados para a versão real. Testado só num PostgreSQL local (ver `supabase/TESTE.md`). |
 | `supabase/teste_rls.sql` | Teste das regras de acesso do banco (quem vê e altera o quê). |
-| `package.json` | Atalhos para servir a página e rodar os testes. |
+| `package.json` | Atalhos para servir a página, rodar os testes e gerar o instalador. |
+| `instalador/` | Gerador do instalador de arquivo único (`gerar-instalador.py`), atalho para Windows e instruções. |
 | `tests/fluxos.test.cjs` | Teste automático das ligações entre as abas. |
 
 **Importante:** o documento original (Kit de Transição de Governo Estadual, 14 páginas, de 30/9/2026) não vai dentro do pacote. Peça o PDF à coordenação e anexe-o ao Claude quando for pedir algo que dependa de detalhes do kit.
+
+## Instalação rápida (um arquivo só)
+
+Quem recebeu o **instalador** (`instalar-painel-transicao.py`) não precisa extrair nada à mão:
+
+- **Mac ou Linux:** abra o Terminal na pasta onde está o arquivo e rode `python3 instalar-painel-transicao.py`.
+- **Windows:** dê dois cliques em `instalar-windows.bat` (precisa do Python instalado, de python.org).
+
+O instalador cria a pasta `PainelTransicao` na sua pasta pessoal, confere se o conteúdo chegou íntegro e mostra o que fazer em seguida. **Se a pasta já existir, ele não apaga nada**: pede confirmação e guarda uma cópia da versão antiga. A pasta `dados/` do usuário nunca é sobrescrita. Depois, no terminal: `cd ~/PainelTransicao` e `claude`, e digite `/primeiro-contato`.
+
+**Gerar um instalador novo depois de melhorar o projeto:** `python3 instalador/gerar-instalador.py` (ou `npm run instalador`). Ele cria a pasta `dist/` com `instalar-painel-transicao.py`, `instalar-windows.bat` e `LEIA-ME.txt`, já com a versão mais recente do projeto dentro. O instalador não leva seus backups pessoais (`dados/meus-*.json`) nem o arquivo `.env`.
+
+## Levar os seus dados para outra máquina
+
+O painel guarda o que você digita **no navegador em que está trabalhando**. Para outra pessoa receber o mesmo estado:
+1. No painel de origem, abra a aba **Salvar e restaurar** e clique em **Baixar dados (arquivo JSON)**. Se o download for bloqueado, use **Copiar dados** e cole em um arquivo de texto salvo como `.json`.
+2. Mande esse arquivo junto com o instalador.
+3. Na máquina nova, abra `painel-transicao.html`, vá em **Salvar e restaurar** e carregue o arquivo.
+
+Sem esse passo, o que foi digitado só no navegador de origem **não vai junto** com o instalador, que leva apenas os dados de exemplo (`dados/dados-iniciais.json`). Anexos viajam só com o nome do arquivo, então envie os documentos à parte.
 
 ## Antes de começar
 1. Uma conta no Claude (claude.ai). Para o Caminho B, um plano que inclua o Claude Code.

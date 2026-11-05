@@ -22,6 +22,7 @@ Use em ordem e marque `[x]` conforme avança. Os itens com 🔒 não podem ser p
 - [ ] Definir o **subdomínio** do Juntos Paraná 399 e quem controla o DNS.
 - [ ] Escolher onde publicar o site (Vercel, Netlify ou Cloudflare Pages) e ligar o subdomínio.
 - [ ] Instalar o Claude Code e rodar `npm install` e `npm test` na pasta do pacote, para confirmar que o ponto de partida funciona.
+- [ ] Receber o **arquivo de dados** (`.json`) de quem já trabalhou no painel e restaurá-lo na aba "Salvar e restaurar".
 
 ## 4. Banco de dados
 - [ ] Revisar `supabase/schema.sql` com alguém que conheça bancos.

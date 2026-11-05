@@ -89,6 +89,44 @@ const confere = (nome, ok, detalhe = '') => {
   const bg = await p.evaluate(() => getComputedStyle(document.body).backgroundColor);
   confere('tema escuro aplica o azul da paleta', bg === 'rgb(6, 27, 46)', bg);
 
+  // 7. Salvar e restaurar dados
+  await aba('dados');
+  const estado = await p.evaluate(() => JSON.stringify(exportState()));
+  const dados = JSON.parse(estado);
+  confere('dados: exportação traz ofício com o texto completo', dados.oficios.some(o => /OFÍCIO Nº/.test(o.txt)));
+  confere('dados: exportação traz risco, autoridade e anexo do relatório',
+    dados.riscos.some(r => r.d === 'Risco de teste') && dados.autoridades.some(a => a.o === 'Secretaria de Teste')
+    && Object.values(dados.anexosRelatorio).some(l => l.includes('folha.pdf')));
+  await p.reload();                                   // o salvamento automático deve devolver tudo
+  await aba('of');
+  confere('dados: salvamento automático sobrevive ao recarregar', /011\/2026/.test(await texto('#view')));
+  await aba('risk');
+  confere('dados: risco continua após recarregar', /Risco de teste/.test(await texto('#view')));
+
+  // outro computador (contexto limpo): restaurar do texto exportado
+  const ctx2 = await browser.newContext();
+  const p2 = await ctx2.newPage();
+  await p2.route('**/*', r => (r.request().url().startsWith('file:') ? r.continue() : r.abort()));
+  await p2.goto('file://' + ARQ);
+  await p2.click('#tabs button[data-tab=of]');
+  const antes2 = await p2.locator('#view tbody tr').count();
+  await p2.click('#tabs button[data-tab=dados]');
+  await p2.fill('#d-txt', 'isto não é json');
+  await p2.click('#d-rest');
+  confere('dados: texto inválido é recusado', /Erro/.test(await p2.locator('#view .warn').first().innerText()));
+  await p2.fill('#d-txt', estado);
+  await p2.click('#d-rest');
+  confere('dados: restauração informa o que voltou', /Dados restaurados/.test(await p2.locator('#view .okmsg').first().innerText()));
+  await p2.click('#tabs button[data-tab=of]');
+  confere('dados: ofícios restaurados no outro computador', (await p2.locator('#view tbody tr').count()) > antes2);
+  await p2.click('#tabs button[data-tab=gen]');
+  confere('dados: autoridade restaurada aparece no gerador', (await p2.locator('#g-org option').allInnerTexts()).includes('Secretaria de Teste'));
+  await p2.click('#tabs button[data-tab=dados]');
+  await p2.click('#d-reset'); await p2.click('#d-reset');
+  await p2.click('#tabs button[data-tab=risk]');
+  confere('dados: "voltar aos dados de exemplo" limpa o que foi restaurado', !/Risco de teste/.test(await p2.locator('#view').innerText()));
+  await ctx2.close();
+
   confere('sem erros de JavaScript', erros.length === 0, erros.join(' | '));
   await browser.close();
   console.log(falhas.length ? `\n${falhas.length} verificação(ões) falharam.` : '\nTodas as verificações passaram.');

@@ -1,0 +1,42 @@
+INSTALADOR DO PAINEL DA TRANSIÇÃO
+==================================
+
+O que é
+-------
+Um instalador de arquivo único (instalar-painel-transicao.py) que coloca o projeto
+completo no seu computador: o painel, o contexto para o Claude, o tutorial, o checklist,
+o rascunho do banco, os testes e os dados que já vêm preenchidos.
+
+Como instalar
+-------------
+Windows:   dois cliques em instalar-windows.bat (precisa do Python, de python.org).
+Mac/Linux: abra o Terminal nesta pasta e rode:
+               python3 instalar-painel-transicao.py --abrir
+
+Por padrão instala na pasta  PainelTransicao  dentro da sua pasta pessoal.
+Para escolher outra:  python3 instalar-painel-transicao.py --destino "CAMINHO"
+
+Depois da instalação
+--------------------
+1. O painel abre no navegador (ou abra painel-transicao.html com dois cliques).
+2. Se você recebeu um arquivo de dados (.json) junto com o instalador, abra a aba
+   "Salvar e restaurar" no painel e carregue esse arquivo. Isso traz de volta tudo o
+   que a outra pessoa já tinha preenchido.
+3. Para continuar melhorando com o Claude:
+      cd PainelTransicao
+      claude
+   e digite /primeiro-contato.
+4. Leia o TUTORIAL.md e o CHECKLIST.md dentro da pasta instalada.
+
+Atualizar uma instalação que já existe
+--------------------------------------
+Rode o instalador de novo com --atualizar. Ele guarda uma cópia da pasta atual (nome
+PainelTransicao.backup-DATA) e NÃO sobrescreve nada dentro de dados/.
+Atenção: arquivos fora de dados/ que você alterou voltam à versão do instalador.
+Se você já melhorou o painel, use a cópia de segurança para recuperar as suas mudanças.
+
+Segurança
+---------
+- O instalador confere o conteúdo com SHA-256 antes de extrair e recusa caminhos suspeitos.
+- Ele não apaga nada e não usa a internet.
+- Não coloque dados reais de pessoas ou documentos sigilosos no protótipo.
