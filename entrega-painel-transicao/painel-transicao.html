@@ -139,6 +139,11 @@ td input{width:100%;min-width:90px}
 .warn{background:var(--s-part-bg);color:var(--s-part-fg);padding:8px 12px;border-radius:6px;font-size:12.5px}
 .okmsg{background:var(--s-del-bg);color:var(--s-del-fg);padding:8px 12px;border-radius:6px;font-size:12.5px}
 .actions{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px;align-items:center}
+.eqt{min-width:760px}.eqt.m{min-width:1100px}
+.eqt td input:not([type=checkbox]){min-width:150px}.eqt td input[data-ef="n"]{min-width:240px}
+.eqt td select{min-width:140px;max-width:210px}
+.eqt th,.eqt td{padding:8px 5px}.eqt td input[data-ef="n"]{min-width:270px}
+.eqt td input[type=checkbox]{width:auto;min-width:0;margin:0}
 @media (prefers-reduced-motion:no-preference){.bar i{transition:width .3s}}
 </style>
 
@@ -155,6 +160,8 @@ td input{width:100%;min-width:90px}
     <button role="tab" data-tab="rel" aria-selected="false">Relatório da secretaria</button>
     <button role="tab" data-tab="risk" aria-selected="false">Mapa de riscos</button>
     <button role="tab" data-tab="team" aria-selected="false">Equipe e acessos</button>
+    <button role="tab" data-tab="eqm" aria-selected="false">Equipe de Transição Moro</button>
+    <button role="tab" data-tab="eqr" aria-selected="false">Equipe de Transição Ratinho</button>
     <button role="tab" data-tab="conf" aria-selected="false">Conflito de interesses</button>
     <button role="tab" data-tab="dados" aria-selected="false">Salvar e restaurar</button>
   </nav>
@@ -204,7 +211,14 @@ let riscos=[
  {g:7,p:"Perda de conhecimento",d:"Exoneração em massa de comissionados em dezembro",pr:1,im:2,r:"Núcleo de gestão e pessoas",pz:"15/02"}];
 const classe=n=>n>=6?["Crítico","crit"]:n>=3?["Alto","high"]:["Moderado","mod"];
 let sel=null,relG=3;
-const termos={assinados:34,total:41};
+/* Equipes do Decreto nº 15.659 (DOE de 4/11/2026), conforme o texto informado pelo usuário. Conferir no Diário Oficial. */
+const DECRETO={num:"15.659",data:"2026-11-04"};
+const MM=(n,p)=>({n,p:p||"Membro",g:null,c:"",t:false,cf:"pendente",o:""});
+const MR=(n,p)=>({n,p:p||"Membro",c:"",o:""});
+const EQ={
+ moro:[MM("Lucas Alves de Lima Barros de Góes","Coordenador-geral"),MM("Pricilla Maria Santana"),MM("Aparecida de Fátima Gavioli"),MM("Edson José de Vasconcelos"),MM("Louise Caroline Campos Low"),MM("Luiz Rodrigo Grochocki"),MM("Fernando Hideyo Yokemura"),MM("Vinicius Klein"),MM("Itanielson Dantas Silveira Cruz"),MM("Lucca Silva Perdigão")],
+ ratinho:[MR("Renato Guimarães Adur","Coordenador-geral"),Object.assign(MR("Darci Plana","Coordenador"),{o:"Grafia como no texto informado. Confirmar no decreto (o vice-governador atual é conhecido como Darci Piana)."}),MR("Daniel Wesley Vilas Boas Rocha","Coordenador"),MR("Alexandre Castro Fernandes"),MR("Bihl Elerian Zanetti"),MR("Camila Mileke Scucato"),MR("Henrique Bonatto Rego Barbosa"),MR("João Luiz Giona Junior"),MR("Luciano Borges dos Santos"),MR("Luiz Paulo Budal Pedroso de Almeida"),MR("Maiquel Guilherme Zimann"),MR("Paulo Mateus Charelli"),MR("Renan Barbosa Lopes Ferreira")]};
+const termos={get total(){return EQ.moro.length},get assinados(){return EQ.moro.filter(m=>m.t).length}};
 
 const $=s=>document.querySelector(s),view=$("#view");
 let tab="dash";
@@ -376,16 +390,17 @@ const TPL={
 const TPLMAP={0:"fluxo",1:"pessoal",2:"prev",3:"saude",4:"edu",5:"seg",6:"infra",7:"agro",8:"social",9:"civil",10:"estatal"};
 const EXT={1:"um",2:"dois",3:"três",4:"quatro",5:"cinco",6:"seis",7:"sete",8:"oito",9:"nove",10:"dez"};
 const gf=(s,tr)=>tr==="M"?s.replace(/o\(a\)/g,"o").replace(/\(a\)/g,""):tr==="F"?s.replace(/o\(a\)/g,"a").replace(/\(a\)/g,"a"):s;
-const G={org:0,nm:"",tr:"?",cargo:"",tpl:"fluxo",chk:[],extra:"",dias:5,sig:"eleito",dec:"___/2026",num:"",data:today.toISOString().slice(0,10),mail:"[e-mail da coordenação da transição]",grp:0,dirty:false,text:"",msg:""};
+const G={org:0,nm:"",tr:"?",cargo:"",tpl:"fluxo",chk:[],extra:"",dias:5,sig:"eleito",dec:DECRETO.num+"/2026",num:"",data:today.toISOString().slice(0,10),mail:"[e-mail da coordenação da transição]",grp:0,dirty:false,text:"",msg:""};
 function setOrg(i){G.done=null;const a=AUT[i];G.org=i;G.nm=a.nm;G.tr=a.tr;G.cargo=a.tit;G.grp=a.g==null?1:a.g;G.tpl=TPLMAP[a.g]||"contr";resetItems()}
 function resetItems(){G.chk=TPL[G.tpl].it.map(()=>true)}
 G.num=String(oficios.length+1).padStart(3,"0");setOrg(0);
+const coordMoro=()=>{const m=EQ.moro.find(x=>x.p==="Coordenador-geral");return m?m.n:"[Nome do(a) Coordenador(a)-Geral]"};
 function buildText(){
   const t=TPL[G.tpl],tr=G.tr,a=AUT[G.org],eleito=G.sig==="eleito";
   const itens=t.it.filter((_,i)=>G.chk[i]).concat(G.extra.split("\n").map(s=>s.trim()).filter(Boolean));
   const dtx=new Date(G.data+"T12:00:00").toLocaleDateString("pt-BR",{day:"numeric",month:"long",year:"numeric"});
-  const quem=eleito?"Governador eleito do Estado do Paraná":"Coordenador(a)-Geral da Equipe de Transição Governamental";
-  const nomeSig=eleito?"Sergio Moro":"[Nome do(a) Coordenador(a)-Geral]";
+  const quem=eleito?"Governador eleito do Estado do Paraná":"Coordenador-Geral da Equipe de Transição do Governador eleito";
+  const nomeSig=eleito?"Sergio Moro":coordMoro();
   const v=G.cargo.split(/\s+d[eoa]s?\s+/)[0];
   const n=G.dias,dx=EXT[n]?`${n} (${EXT[n]})`:String(n);
   const L=[
@@ -420,7 +435,7 @@ function genView(){
    <div class="two"><label class="f">Prazo (dias úteis)<input id="g-dias" type="number" min="1" max="30" value="${G.dias}"></label>
    <label class="f">Data<input id="g-data" type="date" value="${G.data}"></label></div>
    <div class="two"><label class="f">Ofício nº<input id="g-num" value="${esc(G.num)}"></label><label class="f">Decreto nº<input id="g-dec" value="${esc(G.dec)}"></label></div>
-   <label class="f">Quem assina<select id="g-sig"><option value="eleito" ${G.sig==="eleito"?"selected":""}>Sergio Moro, Governador eleito</option><option value="coord" ${G.sig==="coord"?"selected":""}>Coordenador(a)-Geral da transição</option></select></label>
+   <label class="f">Quem assina<select id="g-sig"><option value="eleito" ${G.sig==="eleito"?"selected":""}>Sergio Moro, Governador eleito</option><option value="coord" ${G.sig==="coord"?"selected":""}>${esc(coordMoro())}, Coordenador-Geral da equipe de transição</option></select></label>
    <label class="f">Respostas para<input id="g-mail" value="${esc(G.mail)}"></label>
    <label class="f">Grupo temático responsável<select id="g-grp">${GRUPOS.map((x,i)=>`<option value="${i}" ${i===G.grp?"selected":""}>${esc(x)}</option>`).join("")}</select></label></div>
    <div><div class="actions"><button class="btn" id="g-copy">Copiar texto</button><button class="btn sec" id="g-reg">Registrar no controle de prazos</button><button class="btn sec" id="g-regen">Refazer o texto</button></div>
@@ -531,7 +546,7 @@ function confView(){
   const q=decl.map((d,i)=>`<tr><td>${esc(d.n)}</td><td>${esc(GRUPOS[d.g])}</td><td style="min-width:220px"><span class="pill ${d.ok?"ok":d.tone}">${d.ok?"Aprovado":d.res}</span><br><span class="note">${esc(d.det)}</span></td><td>${d.ok?"":`<button class="btn sec sm" data-capr="${i}">Aprovar</button>`}</td></tr>`).join("");
   return `<div class="grid"><div class="grid twoCol"><div class="panel"><h2>Declaração de conflito de interesses</h2>
    <p class="sub">Preenchida por cada membro antes do primeiro acesso e renovada quando o grupo passar a analisar contratos ou licitações. O sistema só decide o que é objetivo e encaminha o restante para parecer.</p>
-   <div class="formrow"><label class="f grow">Nome completo<input id="c-nome" value="${esc(D.nome)}"></label><label class="f">Grupo temático<select id="c-g">${GRUPOS.map((g,i)=>`<option value="${i}" ${D.grupo===i?"selected":""}>${esc(g)}</option>`).join("")}</select></label></div>
+   <div class="formrow"><label class="f grow">Nome completo<input id="c-nome" list="dl-moro" value="${esc(D.nome)}" autocomplete="off"><datalist id="dl-moro">${EQ.moro.map(m=>`<option value="${esc(m.n)}">`).join("")}</datalist></label><label class="f">Grupo temático<select id="c-g">${GRUPOS.map((g,i)=>`<option value="${i}" ${D.grupo===i?"selected":""}>${esc(g)}</option>`).join("")}</select></label></div>
    ${qs}
    <label class="chk" style="border:0"><input type="checkbox" id="c-termo" ${D.termo?"checked":""}><span>Li e assinei o Termo de confidencialidade e comunicarei qualquer mudança nesta declaração.</span></label>
    <div class="actions" style="margin-top:10px"><button class="btn" id="c-send">Enviar declaração</button></div>
@@ -551,15 +566,75 @@ view.addEventListener("change",e=>{
   if(id==="c-org"||id==="c-nome")return;
 });
 view.addEventListener("click",e=>{
-  if(e.target.dataset.capr!==undefined){decl[+e.target.dataset.capr].ok=true;render();return}
+  if(e.target.dataset.capr!==undefined){const dd=decl[+e.target.dataset.capr];dd.ok=true;const mmb=EQ.moro.find(x=>normNome(x.n)===normNome(dd.n));if(mmb)mmb.cf="aprovada";render();return}
   if(e.target.id==="c-send"){const r=confRes();
     if(!D.nome.trim()){D.msg="Informe o nome completo.";render();return}
     if(r.unanswered){D.msg="Responda todas as perguntas antes de enviar.";render();return}
     if(!D.termo){D.msg="Marque a assinatura do Termo de confidencialidade.";render();return}
     const det=[...r.bl.map(i=>"Bloqueado em "+GRUPOS[i]),...r.rest,...r.par].join(" · ")||"Sem vínculos declarados.";
     decl.unshift({n:D.nome.trim(),g:D.grupo,res:r.status,tone:r.tone,ok:false,det});
+    const mmb=EQ.moro.find(x=>normNome(x.n)===normNome(D.nome));if(mmb)mmb.cf="enviada";
     D.msg="Declaração enviada para análise da Administração.";D.nome="";D.q={};D.areas={forn:[],par:[],cargo:[]};D.orgao="";D.termo=false;render()}
 });
+
+/* ===== Equipes de transição (Decreto nº 15.659) ===== */
+const normNome=t=>String(t==null?"":t).normalize("NFD").replace(/[̀-ͯ]/g,"").toLowerCase().replace(/\s+/g," ").trim();
+const EQ_Q={moro:"",ratinho:""};let EQMSG="";
+const PAPEIS={moro:["Coordenador-geral","Membro","Colaborador"],ratinho:["Coordenador-geral","Coordenador","Membro"]};
+const CF_PILL={pendente:["Pendente","late"],enviada:["Em análise","high"],aprovada:["Aprovada","ok"]};
+function eqRows(side){
+  const q=normNome(EQ_Q[side]),M=side==="moro";
+  return EQ[side].map((m,i)=>({m,i})).filter(({m})=>!q||normNome(m.n+" "+m.p+" "+(m.c||"")+" "+(m.o||"")+" "+(M&&m.g!=null?GRUPOS[m.g]:"")).includes(q)).map(({m,i})=>{
+    const at=f=>`data-eq="${side}" data-ei="${i}" data-ef="${f}"`;
+    const papel=`<select ${at("p")} aria-label="Papel de ${esc(m.n)}">${PAPEIS[side].map(p=>`<option ${m.p===p?"selected":""}>${p}</option>`).join("")}</select>`;
+    const rm=`<button class="btn sec sm" data-edel="${side}:${i}" aria-label="Remover ${esc(m.n)}">Remover</button>`;
+    if(M){const cf=CF_PILL[m.cf]||CF_PILL.pendente;
+      return `<tr><td style="min-width:200px"><input ${at("n")} value="${esc(m.n)}" aria-label="Nome"></td><td>${papel}</td>
+       <td><select ${at("g")} aria-label="Grupo temático de ${esc(m.n)}"><option value="">Sem grupo</option>${GRUPOS.map((g,k)=>`<option value="${k}" ${m.g===k?"selected":""}>${esc(g)}</option>`).join("")}</select></td>
+       <td><input ${at("c")} value="${esc(m.c)}" placeholder="E-mail ou telefone" aria-label="Contato de ${esc(m.n)}"></td>
+       <td><label style="display:flex;gap:6px;align-items:center;white-space:nowrap"><input type="checkbox" ${at("t")} ${m.t?"checked":""}> Assinado</label></td>
+       <td><span class="pill ${cf[1]}">${cf[0]}</span></td><td>${rm}</td></tr>`}
+    return `<tr><td style="min-width:200px"><input ${at("n")} value="${esc(m.n)}" aria-label="Nome"></td><td>${papel}</td>
+       <td><input ${at("c")} value="${esc(m.c)}" placeholder="E-mail ou telefone" aria-label="Contato de ${esc(m.n)}"></td>
+       <td style="min-width:220px"><input ${at("o")} value="${esc(m.o)}" placeholder="Observação" aria-label="Observação sobre ${esc(m.n)}"></td><td>${rm}</td></tr>`}).join("");
+}
+function equipeView(side){
+  const M=side==="moro",L=EQ[side];
+  const dt=pdt(DECRETO.data),dtx=dt?dt.toLocaleDateString("pt-BR"):"";
+  const kp=M?[[L.length,"integrantes indicados"],[`${termos.assinados}/${termos.total}`,"termos de sigilo assinados"],[L.filter(m=>m.g==null).length,"sem grupo temático"],[L.filter(m=>m.cf==="pendente").length,"declarações de conflito pendentes"]]
+            :[[L.length,"integrantes"],[L.filter(m=>m.p==="Coordenador-geral"||m.p==="Coordenador").length,"coordenadores"],[L.filter(m=>m.p==="Membro").length,"membros"]];
+  const titulo=M?"Equipe de Transição Moro":"Equipe de Transição Ratinho";
+  const sub=M?"Os dez nomes indicados pelo governador eleito, oficializados pelo Decreto nº "+DECRETO.num+", publicado no Diário Oficial do Estado em "+dtx+". Aqui você atribui cada pessoa a um grupo temático e acompanha o termo de sigilo e a declaração de conflito de interesses."
+             :"Comissão de Transição do governo atual (Ratinho Junior), instituída pelo mesmo decreto. Faz a interlocução com a equipe do governador eleito. Essas pessoas não têm acesso à plataforma: a lista serve para endereçar e acompanhar os ofícios.";
+  const heads=M?"<th>Nome</th><th>Papel</th><th>Grupo temático</th><th>Contato</th><th>Termo de sigilo</th><th>Conflito de interesses</th><th></th>":"<th>Nome</th><th>Papel</th><th>Contato</th><th>Observação</th><th></th>";
+  const form=`<div class="formrow"><label class="f grow">Nome completo<input id="e-n" placeholder="Nome de quem entra na lista"></label>
+   <label class="f">Papel<select id="e-p">${PAPEIS[side].filter(p=>p!=="Coordenador-geral").map(p=>`<option>${p}</option>`).join("")}</select></label>
+   ${M?`<label class="f">Grupo temático<select id="e-g"><option value="">Sem grupo</option>${GRUPOS.map((g,k)=>`<option value="${k}">${esc(g)}</option>`).join("")}</select></label>`:""}
+   <label class="f">Contato<input id="e-c" placeholder="E-mail ou telefone"></label><button class="btn" data-eadd="${side}">Adicionar</button></div>`;
+  return `<div class="grid"><div class="panel"><h2>${titulo}</h2><p class="sub">${sub}</p>
+  <div class="note" style="margin-bottom:12px">Composição conforme o texto informado. Confira cada nome no Diário Oficial antes de usar em documentos oficiais.</div>
+  <div class="grid kpis" style="margin-bottom:14px">${kp.map(x=>`<div class="kpi ${M&&x[1].includes("pendentes")&&x[0]>0?"bad":""}"><div class="n">${x[0]}</div><div class="l">${x[1]}</div></div>`).join("")}</div>
+  ${EQMSG?`<div class="${EQMSG.startsWith("Já")||EQMSG.startsWith("Informe")?"warn":"okmsg"}" style="margin-bottom:12px">${esc(EQMSG)}</div>`:""}
+  ${form}
+  <label class="f" style="margin-bottom:10px">Buscar<input id="e-q" placeholder="Nome, papel ou grupo" value="${esc(EQ_Q[side])}"></label>
+  <div class="scroll"><table class="eqt ${M?"m":"r"}"><thead><tr>${heads}</tr></thead><tbody id="eq-body">${eqRows(side)}</tbody></table></div>
+  ${M?`<p class="note" style="margin-top:12px">Ao enviar a declaração de conflito (aba Conflito de interesses) com o nome de um integrante, a situação dele muda para "Em análise" e, quando a Administração aprova, para "Aprovada". O número de termos assinados alimenta os indicadores do Painel geral e da aba Equipe e acessos.</p>`:`<p class="note" style="margin-top:12px">Coordenador-geral do governo atual: use o nome dele no endereçamento e no controle de respostas dos ofícios.</p>`}</div></div>`;
+}
+const eqmView=()=>equipeView("moro"),eqrView=()=>equipeView("ratinho");
+view.addEventListener("input",e=>{const t=e.target;
+  if(t.dataset.eq&&["n","c","o"].includes(t.dataset.ef)){EQ[t.dataset.eq][+t.dataset.ei][t.dataset.ef]=t.value;return}
+  if(t.id==="e-q"){const sd=tab==="eqm"?"moro":"ratinho";EQ_Q[sd]=t.value;$("#eq-body").innerHTML=eqRows(sd)}});
+view.addEventListener("change",e=>{const t=e.target;
+  if(t.dataset.eq&&["p","g","t"].includes(t.dataset.ef)){const m=EQ[t.dataset.eq][+t.dataset.ei],f=t.dataset.ef;
+    if(f==="t")m.t=t.checked;else if(f==="g")m.g=t.value===""?null:+t.value;else m.p=t.value;EQMSG="";render()}});
+view.addEventListener("click",e=>{const t=e.target;
+  if(t.dataset.edel){const [sd,i]=t.dataset.edel.split(":");const nm=EQ[sd][+i].n;EQ[sd].splice(+i,1);EQMSG=`${nm} foi removido(a) da lista.`;render();return}
+  if(t.dataset.eadd){const sd=t.dataset.eadd,n=$("#e-n").value.trim();
+    if(!n){EQMSG="Informe o nome completo.";render();return}
+    if(EQ[sd].some(m=>normNome(m.n)===normNome(n))){EQMSG=`Já existe ${n} nesta lista.`;render();return}
+    const base=sd==="moro"?MM(n,$("#e-p").value):MR(n,$("#e-p").value);base.c=$("#e-c").value.trim();
+    if(sd==="moro"){const gv=$("#e-g").value;base.g=gv===""?null:+gv}
+    EQ[sd].push(base);EQMSG=`${n} foi adicionado(a) à lista.`;render()}});
 
 /* ===== Salvar e restaurar dados (arquivo JSON + salvamento automático no navegador) ===== */
 const CHAVE="painel-transicao-v1";
@@ -568,7 +643,7 @@ const pdt=s=>{const m=/^(\d{4})-(\d{2})-(\d{2})$/.exec(String(s));if(!m)return n
 function exportState(){return {app:"painel-transicao",versao:1,exportadoEm:new Date().toISOString(),
   matriz:matrix.map(r=>r.slice()),oficios:oficios.map(o=>({...o,env:ymd(o.env),prazo:ymd(o.prazo)})),riscos:riscos.map(r=>({...r})),
   autoridades:AUT.map(a=>({...a})),declaracoes:decl.map(d=>({...d})),relatorio:{...REL},anexosRelatorio:{...ATT},linhasExtras:{...ROWS},
-  gerador:{num:G.num,dec:G.dec,mail:G.mail,sig:G.sig,dias:G.dias}}}
+  gerador:{num:G.num,dec:G.dec,mail:G.mail,sig:G.sig,dias:G.dias},equipes:{moro:EQ.moro.map(m=>({...m})),ratinho:EQ.ratinho.map(m=>({...m}))}}}
 function validar(o){
   const gOk=x=>Number.isInteger(x)&&x>=0&&x<GRUPOS.length;
   if(!o||typeof o!=="object"||o.app!=="painel-transicao"||o.versao!==1)return "O arquivo não é um backup do Painel da Transição (versão 1).";
@@ -577,6 +652,9 @@ function validar(o){
   if(!Array.isArray(o.riscos)||o.riscos.some(r=>!r||!gOk(r.g)||![1,2,3].includes(r.pr)||![1,2,3].includes(r.im)||typeof r.d!=="string"))return "A lista de riscos está inválida.";
   if(!Array.isArray(o.autoridades)||o.autoridades.some(a=>!a||typeof a.o!=="string"||typeof a.nm!=="string"||!ST_AUT[a.st]||!["M","F","?"].includes(a.tr)))return "A lista de autoridades está inválida.";
   if(!Array.isArray(o.declaracoes)||o.declaracoes.some(d=>!d||typeof d.n!=="string"||!gOk(d.g)))return "A lista de declarações está inválida.";
+  if(o.equipes!==undefined){const q=o.equipes;
+    if(!q||!Array.isArray(q.moro)||!Array.isArray(q.ratinho)||[...q.moro,...q.ratinho].some(m=>!m||typeof m.n!=="string"||!m.n.trim()))return "A lista das equipes de transição está inválida.";
+    if(q.moro.some(m=>m.g!=null&&!gOk(m.g)))return "Há integrante da equipe com grupo temático inválido."}
   return null}
 const S=v=>v==null?"":String(v);
 function importState(o){
@@ -589,6 +667,8 @@ function importState(o){
   limpa(REL,o.relatorio,v=>typeof v==="string"?v:undefined);
   limpa(ATT,o.anexosRelatorio,v=>Array.isArray(v)?v.map(S):undefined);
   limpa(ROWS,o.linhasExtras,v=>Number.isInteger(v)&&v>0&&v<200?v:undefined);
+  if(o.equipes){EQ.moro.splice(0,EQ.moro.length,...o.equipes.moro.map(m=>({n:m.n,p:PAPEIS.moro.includes(m.p)?m.p:"Membro",g:Number.isInteger(m.g)?m.g:null,c:S(m.c),t:!!m.t,cf:CF_PILL[m.cf]?m.cf:"pendente",o:S(m.o)})));
+    EQ.ratinho.splice(0,EQ.ratinho.length,...o.equipes.ratinho.map(m=>({n:m.n,p:PAPEIS.ratinho.includes(m.p)?m.p:"Membro",c:S(m.c),o:S(m.o)})))}
   OPEN.clear();sel=null;setOrg(0);G.dirty=false;G.msg="";G.done=null;
   const g=o.gerador||{};G.dec=S(g.dec)||G.dec;G.mail=S(g.mail)||G.mail;if(g.sig==="eleito"||g.sig==="coord")G.sig=g.sig;if(Number.isInteger(g.dias)&&g.dias>0&&g.dias<31)G.dias=g.dias;
   G.num=String(oficios.length+1).padStart(3,"0")}
@@ -598,7 +678,7 @@ function salva(){try{localStorage.setItem(CHAVE,JSON.stringify(exportState()))}c
 try{const sv=localStorage.getItem(CHAVE);if(sv){const o=JSON.parse(sv);if(!validar(o))importState(o)}}catch(_){SALVA_OK=false}
 let tmSalva=0;view.addEventListener("input",()=>{clearTimeout(tmSalva);tmSalva=setTimeout(salva,400)});
 function dadosView(){
-  const k=[[oficios.length,"ofícios"],[riscos.length,"riscos"],[AUT.length,"autoridades"],[decl.length,"declarações"],[Object.keys(ATT).reduce((n,x)=>n+ATT[x].length,0),"anexos do relatório (só nomes)"]];
+  const k=[[oficios.length,"ofícios"],[riscos.length,"riscos"],[AUT.length,"autoridades"],[decl.length,"declarações"],[EQ.moro.length+EQ.ratinho.length,"integrantes das equipes"],[Object.keys(ATT).reduce((n,x)=>n+ATT[x].length,0),"anexos do relatório (só nomes)"]];
   return `<div class="grid"><div class="panel"><h2>Salvar e restaurar dados</h2>
   <p class="sub">Tudo o que foi digitado nesta página pode ser guardado em um arquivo e levado para outro computador ou para o Claude de outra pessoa. O arquivo guarda ofícios (com o texto), riscos, autoridades, declarações, situação do painel e o que foi preenchido no relatório. Anexos entram só com o nome do arquivo, não com o conteúdo.</p>
   <div class="grid kpis" style="margin-bottom:14px">${k.map(x=>`<div class="kpi"><div class="n">${x[0]}</div><div class="l">${x[1]}</div></div>`).join("")}</div>
@@ -626,7 +706,7 @@ view.addEventListener("change",e=>{if(e.target.id==="d-file"&&e.target.files[0])
 
 function render(){
   const op=tab==="rel"?[...view.querySelectorAll("details.blk")].map(d=>d.open):[];
-  view.innerHTML={dash,of:ofView,gen:genView,aut:autView,rel:relView,risk:riskView,team:teamView,conf:confView,dados:dadosView}[tab]();
+  view.innerHTML={dash,of:ofView,gen:genView,aut:autView,rel:relView,risk:riskView,team:teamView,conf:confView,eqm:eqmView,eqr:eqrView,dados:dadosView}[tab]();
   if(tab==="rel"&&op.length===BLOCOS.length+1)view.querySelectorAll("details.blk").forEach((d,i)=>{d.open=op[i]});
   if(tab==="rel")view.querySelectorAll("details.blk").forEach((d,bi)=>d.querySelectorAll("input:not([type=file]),textarea,select:not([data-bst])").forEach((el,k)=>{const key=relG+"|"+bi+"|"+k;el.dataset.rk=key;if(REL[key]!==undefined)el.value=REL[key]}));
   document.querySelectorAll("#tabs button").forEach(b=>b.setAttribute("aria-selected",b.dataset.tab===tab));

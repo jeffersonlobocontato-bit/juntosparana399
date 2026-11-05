@@ -3,8 +3,8 @@
 Use em ordem e marque `[x]` conforme avança. Os itens com 🔒 não podem ser pulados antes de entrar qualquer dado real.
 
 ## 1. Decisões e confirmações (antes de construir)
-- [ ] Pedir à coordenação o **PDF original do Kit de Transição** e o **decreto efetivamente publicado**, e ajustar os artigos que hoje estão entre colchetes (`art. [4º]`, `art. [5º]`).
-- [ ] **Quem assina os ofícios:** o governador eleito sozinho ou os coordenadores previstos no decreto. Confirmar com o jurídico.
+- [ ] Pedir à coordenação o **PDF original do Kit de Transição** e o **texto do Decreto nº 15.659**, e ajustar os artigos que hoje estão entre colchetes (`art. [4º]`, `art. [5º]`). O número do decreto e as duas listas de integrantes já estão no painel, mas **vieram de um texto informado e precisam ser conferidos no Diário Oficial** (inclusive a grafia "Darci Plana").
+- [ ] **Quem assina os ofícios:** o governador eleito ou o coordenador-geral da equipe dele (o gerador oferece as duas opções). Confirmar com o jurídico e com a Comissão de Transição.
 - [ ] Parecer da PGE ou do jurídico sobre as **regras de conflito de interesses**: grau de parentesco, bloqueio por área e participação de servidor do governo atual ou cedido.
 - [ ] Decidir se há **exigência de hospedagem no Brasil ou em ambiente governamental**.
 - [ ] Confirmar com a coordenação os **perfis de acesso** e quem fica em cada um. A Alcione Gomes é a administradora.

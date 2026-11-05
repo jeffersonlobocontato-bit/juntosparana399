@@ -2,6 +2,9 @@
 
 Resumo do **Kit de Transição de Governo Estadual** (30/9/2026, coordenação: Alcione Gomes) e das decisões de produto. O texto do kit é a fonte. Em caso de dúvida, consulte o PDF original.
 
+## 0. Decreto nº 15.659 (publicado no DOE de 4/11/2026)
+Conforme o texto informado: oficializou **10 nomes indicados pelo governador eleito** (coordenador-geral: Lucas Alves de Lima Barros de Góes) e instituiu a **Comissão de Transição do governo atual**, responsável pela interlocução (coordenador-geral: Renato Guimarães Adur; coordenadores: Darci Plana e Daniel Wesley Vilas Boas Rocha; mais 10 membros). As listas completas estão nas abas "Equipe de Transição Moro" e "Equipe de Transição Ratinho" do painel e em `dados/dados-iniciais.json`. Confirmar a grafia e os artigos no Diário Oficial.
+
 ## 1. Calendário
 | Data | Marco |
 |---|---|
@@ -82,7 +85,7 @@ Indícios de irregularidade: **registrar formalmente e comunicar à Controladori
 | Governador eleito e vice | leitura | não | não | não |
 
 ## 10. Ainda sem decisão
-1. Quem assina os ofícios: o governador eleito sozinho, ou os coordenadores previstos no decreto-modelo? (Confirmar com o jurídico.)
+1. Quem assina os ofícios: o governador eleito ou o coordenador-geral da equipe dele (Lucas Alves de Lima Barros de Góes)? O gerador oferece as duas opções. Confirmar com o jurídico e com a Comissão de Transição.
 2. Regras de parentesco e de bloqueio do conflito de interesses.
 3. Subdomínio e responsável pelo DNS.
 4. Exigência de hospedagem em território nacional ou ambiente governamental.

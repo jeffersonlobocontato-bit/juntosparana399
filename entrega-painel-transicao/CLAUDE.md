@@ -20,6 +20,7 @@ Ela organiza o trabalho descrito no **Kit de Transição de Governo Estadual** (
 - **Relatório da secretaria:** 8 blocos com tabelas do kit, anexos, linhas extras e situação por bloco.
 - **Mapa de riscos:** nota = probabilidade (1–3) × impacto (1–3). 6 a 9 crítico, 3 a 4 alto, 1 a 2 moderado.
 - **Conflito de interesses:** declaração com 7 perguntas e resultado (liberado, com restrições, aguardando parecer).
+- **Equipe de Transição Moro** (10 indicados) e **Equipe de Transição Ratinho** (Comissão de Transição, 13 integrantes), conforme o **Decreto nº 15.659** (DOE de 4/11/2026, texto informado pelo usuário). A equipe Moro recebe grupo temático, contato, termo de sigilo e situação da declaração de conflito, e alimenta os indicadores de termos do painel. O número do decreto e o coordenador-geral entram no gerador de ofícios.
 - **Equipe e acessos**, botão de **fundo escuro** com paleta azul e aba **Salvar e restaurar** (exporta e importa todos os dados em JSON, com validação).
 
 ### Ligações entre abas (mantenha)
@@ -28,6 +29,9 @@ Ela organiza o trabalho descrito no **Kit de Transição de Governo Estadual** (
 - Anexar documento num bloco do relatório → bloco passa a "Parcial" (se estava abaixo).
 - Novo risco → entra no mapa e nos riscos críticos do painel (nota ≥ 6).
 - Nova autoridade → aparece na aba Autoridades e no seletor do gerador.
+
+## Decreto nº 15.659 (publicado)
+O decreto oficializou os 10 nomes do governador eleito (coordenador-geral: Lucas Alves de Lima Barros de Góes) e instituiu a Comissão de Transição do governo atual (coordenador-geral: Renato Guimarães Adur; coordenadores: Darci Plana e Daniel Wesley Vilas Boas Rocha). **A grafia "Darci Plana" veio do texto informado; o vice-governador atual é conhecido como Darci Piana. Confirmar no Diário Oficial.** Os números de artigos do decreto ainda aparecem entre colchetes nos ofícios (`art. [4º]`, `art. [5º]`) porque o texto do decreto não foi fornecido.
 
 ## Decisões já tomadas (não reabra sem o usuário pedir)
 1. **Administradora da plataforma e quem aprova acessos: Alcione Gomes.**

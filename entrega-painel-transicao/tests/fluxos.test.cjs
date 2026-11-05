@@ -89,6 +89,43 @@ const confere = (nome, ok, detalhe = '') => {
   const bg = await p.evaluate(() => getComputedStyle(document.body).backgroundColor);
   confere('tema escuro aplica o azul da paleta', bg === 'rgb(6, 27, 46)', bg);
 
+  // 6b. Equipes de transição (Decreto nº 15.659)
+  await aba('eqm');
+  confere('equipe Moro: 10 indicados pelo decreto', (await linhas('#eq-body tr')) === 10);
+  confere('equipe Moro: coordenador-geral é Lucas Alves de Lima Barros de Góes',
+    /Lucas Alves de Lima Barros de Góes/.test(await p.locator('#eq-body input[data-ef="n"]').first().inputValue()));
+  await aba('eqr');
+  confere('equipe Ratinho: 13 integrantes (3 coordenadores e 10 membros)', (await linhas('#eq-body tr')) === 13);
+  await aba('dash');
+  const pend0 = (await p.locator('.kpi .n').allInnerTexts())[4];
+  await aba('eqm');
+  await p.check('input[data-ef="t"] >> nth=0');
+  await aba('dash');
+  confere('equipe Moro: termo assinado reduz os termos pendentes do painel', (await p.locator('.kpi .n').allInnerTexts())[4] === String(+pend0 - 1), pend0);
+  await aba('eqm');
+  await p.selectOption('select[data-ef="g"] >> nth=1', '3');
+  await p.fill('#e-n', 'Pessoa de Teste'); await p.selectOption('#e-p', 'Colaborador'); await p.click('[data-eadd="moro"]');
+  confere('equipe Moro: nova pessoa entra na lista', (await linhas('#eq-body tr')) === 11);
+  await p.fill('#e-n', 'pessoa de teste'); await p.click('[data-eadd="moro"]');
+  confere('equipe Moro: nome repetido é recusado', /Já existe/.test(await texto('#view .warn')) && (await linhas('#eq-body tr')) === 11);
+  await aba('conf');
+  for (const q of ['forn', 'par', 'atual', 'cargo', 'lobby', 'doa', 'info']) await p.check(`input[name=q-${q}][value=n]`);
+  await p.fill('#c-nome', 'Vinicius Klein'); await p.check('#c-termo'); await p.click('#c-send');
+  await aba('eqm');
+  confere('conflito: declaração de integrante vira "Em análise" na equipe', /Em análise/.test(await texto('#eq-body')));
+  await aba('conf');
+  await p.locator('tr:has-text("Vinicius Klein") [data-capr]').click();
+  await aba('eqm');
+  confere('conflito: aprovação da Administração vira "Aprovada" na equipe', /Aprovada/.test(await texto('#eq-body')));
+  await aba('gen'); await p.selectOption('#g-sig', 'coord');
+  const ofc = await p.locator('#g-doc').innerText();
+  confere('gerador: cita o Decreto nº 15.659/2026', /Decreto nº 15\.659\/2026/.test(ofc));
+  confere('gerador: assinatura pelo coordenador-geral da equipe do eleito', /Lucas Alves de Lima Barros de Góes\s+Coordenador-Geral da Equipe de Transição do Governador eleito/.test(ofc));
+  await aba('eqr');
+  await p.fill('#e-q', 'adur');
+  confere('equipe Ratinho: busca filtra a lista', (await linhas('#eq-body tr')) === 1);
+  await p.fill('#e-q', '');
+
   // 7. Salvar e restaurar dados
   await aba('dados');
   const estado = await p.evaluate(() => JSON.stringify(exportState()));
@@ -97,6 +134,7 @@ const confere = (nome, ok, detalhe = '') => {
   confere('dados: exportação traz risco, autoridade e anexo do relatório',
     dados.riscos.some(r => r.d === 'Risco de teste') && dados.autoridades.some(a => a.o === 'Secretaria de Teste')
     && Object.values(dados.anexosRelatorio).some(l => l.includes('folha.pdf')));
+  confere('dados: exportação traz as duas equipes', dados.equipes && dados.equipes.moro.length === 11 && dados.equipes.ratinho.length === 13);
   await p.reload();                                   // o salvamento automático deve devolver tudo
   await aba('of');
   confere('dados: salvamento automático sobrevive ao recarregar', /011\/2026/.test(await texto('#view')));
@@ -119,6 +157,8 @@ const confere = (nome, ok, detalhe = '') => {
   confere('dados: restauração informa o que voltou', /Dados restaurados/.test(await p2.locator('#view .okmsg').first().innerText()));
   await p2.click('#tabs button[data-tab=of]');
   confere('dados: ofícios restaurados no outro computador', (await p2.locator('#view tbody tr').count()) > antes2);
+  await p2.click('#tabs button[data-tab=eqm]');
+  confere('dados: equipe restaurada no outro computador', (await p2.locator('#eq-body tr').count()) === 11);
   await p2.click('#tabs button[data-tab=gen]');
   confere('dados: autoridade restaurada aparece no gerador', (await p2.locator('#g-org option').allInnerTexts()).includes('Secretaria de Teste'));
   await p2.click('#tabs button[data-tab=dados]');

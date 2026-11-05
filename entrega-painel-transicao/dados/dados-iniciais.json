@@ -1,7 +1,7 @@
 {
   "app": "painel-transicao",
   "versao": 1,
-  "exportadoEm": "2026-11-05T17:34:51.741Z",
+  "exportadoEm": "2026-11-05T17:53:25.740Z",
   "matriz": [
     [
       0,
@@ -617,9 +617,183 @@
   "linhasExtras": {},
   "gerador": {
     "num": "011",
-    "dec": "___/2026",
+    "dec": "15.659/2026",
     "mail": "[e-mail da coordenação da transição]",
     "sig": "eleito",
     "dias": 5
+  },
+  "equipes": {
+    "moro": [
+      {
+        "n": "Lucas Alves de Lima Barros de Góes",
+        "p": "Coordenador-geral",
+        "g": null,
+        "c": "",
+        "t": false,
+        "cf": "pendente",
+        "o": ""
+      },
+      {
+        "n": "Pricilla Maria Santana",
+        "p": "Membro",
+        "g": null,
+        "c": "",
+        "t": false,
+        "cf": "pendente",
+        "o": ""
+      },
+      {
+        "n": "Aparecida de Fátima Gavioli",
+        "p": "Membro",
+        "g": null,
+        "c": "",
+        "t": false,
+        "cf": "pendente",
+        "o": ""
+      },
+      {
+        "n": "Edson José de Vasconcelos",
+        "p": "Membro",
+        "g": null,
+        "c": "",
+        "t": false,
+        "cf": "pendente",
+        "o": ""
+      },
+      {
+        "n": "Louise Caroline Campos Low",
+        "p": "Membro",
+        "g": null,
+        "c": "",
+        "t": false,
+        "cf": "pendente",
+        "o": ""
+      },
+      {
+        "n": "Luiz Rodrigo Grochocki",
+        "p": "Membro",
+        "g": null,
+        "c": "",
+        "t": false,
+        "cf": "pendente",
+        "o": ""
+      },
+      {
+        "n": "Fernando Hideyo Yokemura",
+        "p": "Membro",
+        "g": null,
+        "c": "",
+        "t": false,
+        "cf": "pendente",
+        "o": ""
+      },
+      {
+        "n": "Vinicius Klein",
+        "p": "Membro",
+        "g": null,
+        "c": "",
+        "t": false,
+        "cf": "pendente",
+        "o": ""
+      },
+      {
+        "n": "Itanielson Dantas Silveira Cruz",
+        "p": "Membro",
+        "g": null,
+        "c": "",
+        "t": false,
+        "cf": "pendente",
+        "o": ""
+      },
+      {
+        "n": "Lucca Silva Perdigão",
+        "p": "Membro",
+        "g": null,
+        "c": "",
+        "t": false,
+        "cf": "pendente",
+        "o": ""
+      }
+    ],
+    "ratinho": [
+      {
+        "n": "Renato Guimarães Adur",
+        "p": "Coordenador-geral",
+        "c": "",
+        "o": ""
+      },
+      {
+        "n": "Darci Plana",
+        "p": "Coordenador",
+        "c": "",
+        "o": "Grafia como no texto informado. Confirmar no decreto (o vice-governador atual é conhecido como Darci Piana)."
+      },
+      {
+        "n": "Daniel Wesley Vilas Boas Rocha",
+        "p": "Coordenador",
+        "c": "",
+        "o": ""
+      },
+      {
+        "n": "Alexandre Castro Fernandes",
+        "p": "Membro",
+        "c": "",
+        "o": ""
+      },
+      {
+        "n": "Bihl Elerian Zanetti",
+        "p": "Membro",
+        "c": "",
+        "o": ""
+      },
+      {
+        "n": "Camila Mileke Scucato",
+        "p": "Membro",
+        "c": "",
+        "o": ""
+      },
+      {
+        "n": "Henrique Bonatto Rego Barbosa",
+        "p": "Membro",
+        "c": "",
+        "o": ""
+      },
+      {
+        "n": "João Luiz Giona Junior",
+        "p": "Membro",
+        "c": "",
+        "o": ""
+      },
+      {
+        "n": "Luciano Borges dos Santos",
+        "p": "Membro",
+        "c": "",
+        "o": ""
+      },
+      {
+        "n": "Luiz Paulo Budal Pedroso de Almeida",
+        "p": "Membro",
+        "c": "",
+        "o": ""
+      },
+      {
+        "n": "Maiquel Guilherme Zimann",
+        "p": "Membro",
+        "c": "",
+        "o": ""
+      },
+      {
+        "n": "Paulo Mateus Charelli",
+        "p": "Membro",
+        "c": "",
+        "o": ""
+      },
+      {
+        "n": "Renan Barbosa Lopes Ferreira",
+        "p": "Membro",
+        "c": "",
+        "o": ""
+      }
+    ]
   }
 }
