@@ -1,0 +1,245 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Painel da Transição – Manual de instalação</title>
+<style>
+:root{--ink:#14202e;--ink2:#4a586a;--line:#d5dce5;--accent:#1b4f8f;--soft:#e8f0fa;--ok:#14633f;--okbg:#e2f3ea;--warn:#7a4a00;--warnbg:#fdf0cf;--bad:#a11d12;--badbg:#fbe3e0;--paper:#fff}
+*{box-sizing:border-box}
+html{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+body{margin:0;background:#eef2f6;color:var(--ink);font:15px/1.55 "Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif}
+main{max-width:820px;margin:0 auto;background:var(--paper);padding:48px 56px 56px}
+h1{font:700 32px/1.15 Georgia,"Times New Roman",serif;margin:0 0 6px;color:var(--ink)}
+h2{font:700 22px/1.25 Georgia,"Times New Roman",serif;margin:38px 0 10px;padding-bottom:6px;border-bottom:2px solid var(--accent);color:var(--accent);break-after:avoid}
+h3{font:700 16px/1.3 "Segoe UI",system-ui,sans-serif;margin:22px 0 6px;break-after:avoid}
+p{margin:0 0 10px}
+.sub{color:var(--ink2);font-size:16px;margin-bottom:4px}
+.meta{color:var(--ink2);font-size:13px;margin-bottom:26px}
+.step{display:flex;gap:14px;margin:16px 0;break-inside:avoid}
+.num{flex:none;width:34px;height:34px;min-width:34px;border-radius:50%;background:var(--accent);color:#fff;font-weight:700;display:flex;align-items:center;justify-content:center}
+.step>div:not(.num){min-width:0;flex:1}
+.step b.t{display:block;font-size:16px;margin-bottom:3px}
+.box{border-radius:8px;padding:10px 14px;margin:10px 0;font-size:14px;break-inside:avoid}
+.box.see{background:var(--okbg);color:var(--ok)}
+.box.warn{background:var(--warnbg);color:var(--warn)}
+.box.bad{background:var(--badbg);color:var(--bad)}
+.box.info{background:var(--soft);color:var(--accent)}
+.box strong:first-child{display:block;margin-bottom:2px}
+code,.cmd{font-family:Consolas,"SFMono-Regular",Menlo,monospace;font-size:13.5px}
+code{background:#eef2f6;border:1px solid var(--line);border-radius:4px;padding:1px 5px}
+pre.cmd{background:#101a26;color:#e6f0fa;border-radius:8px;padding:12px 14px;margin:8px 0;overflow-x:auto;white-space:pre-wrap;word-break:break-word;break-inside:avoid}
+table{border-collapse:collapse;width:100%;margin:10px 0 14px;font-size:14px}
+th,td{border:1px solid var(--line);padding:8px 10px;text-align:left;vertical-align:top}
+th{background:var(--soft);font-weight:700}
+tr{break-inside:avoid}
+ul,ol{margin:6px 0 12px;padding-left:22px}
+li{margin:3px 0}
+.check li{list-style:none;margin-left:-22px;padding-left:26px;position:relative}
+.check li::before{content:"";position:absolute;left:0;top:5px;width:14px;height:14px;border:2px solid var(--accent);border-radius:3px}
+.cols{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.card{border:1px solid var(--line);border-radius:8px;padding:12px 14px}
+.card h3{margin-top:0}
+.os{display:inline-block;font-size:12px;font-weight:700;border-radius:4px;padding:1px 7px;background:var(--accent);color:#fff;margin-right:6px}
+.os.mac{background:#444}
+footer{margin-top:36px;padding-top:12px;border-top:1px solid var(--line);color:var(--ink2);font-size:12.5px}
+.break{break-before:page}
+@media (max-width:640px){main{padding:28px 18px}.cols{grid-template-columns:1fr}}
+@page{size:A4;margin:16mm 14mm}
+@media print{body{background:#fff}main{max-width:none;padding:0}}
+</style>
+</head>
+<body>
+<main>
+<h1>Painel da Transição</h1>
+<p class="sub">Manual de instalação, passo a passo</p>
+<p class="meta">Para quem vai receber o projeto e continuar as melhorias · Novembro de 2026 · Não é preciso saber programar</p>
+
+<div class="box info"><strong>Em uma frase</strong>
+Você recebe um arquivo zip. Existem três jeitos de usá-lo: <b>instalar no seu computador</b> (Caminho A, o mais completo), <b>trabalhar só pelo Claude no navegador</b>, sem instalar nada (Caminho B), ou <b>editar o mesmo painel online</b>, se você recebeu um link com permissão de edição (Caminho C). Subir o zip no Claude <u>não instala</u> o projeto sozinho.</div>
+
+<h2>1. Antes de começar</h2>
+<h3>O que você deve ter recebido</h3>
+<ul class="check">
+<li>O arquivo <b>painel-transicao-para-enviar.zip</b>.</li>
+<li>Se houver, um arquivo de dados com final <b>.json</b>, que traz tudo o que a pessoa que enviou já preencheu.</li>
+</ul>
+<h3>O que você precisa ter</h3>
+<ul class="check">
+<li>Um computador com <b>Windows 10 ou 11, Mac ou Linux</b> (para o Caminho A).</li>
+<li>Um navegador atualizado (Chrome, Edge, Firefox ou Safari).</li>
+<li>Uma <b>conta no Claude</b> (claude.ai). Para o Claude Code, confira no guia oficial se o seu plano inclui esse recurso.</li>
+<li>Conexão com a internet para baixar os programas.</li>
+<li>Cerca de 30 a 40 minutos na primeira vez.</li>
+</ul>
+
+<h2>2. Qual caminho escolher</h2>
+<table style="break-inside:avoid">
+<tr><th></th><th>Caminho A · No computador</th><th>Caminho B · Só no navegador</th><th>Caminho C · Mesmo painel online</th></tr>
+<tr><td><b>Para quem</b></td><td>Quem vai continuar construindo o sistema</td><td>Quem só quer ver, ajustar textos e telas</td><td>Quem recebeu um link de edição do painel</td></tr>
+<tr><td><b>Instala algo?</b></td><td>Sim: Python e Claude Code</td><td>Não</td><td>Não</td></tr>
+<tr><td><b>O Claude altera os arquivos?</b></td><td>Sim, direto na pasta, e roda os testes</td><td>Não: ele devolve o arquivo novo e você salva</td><td>Atualiza a própria página publicada, no mesmo link</td></tr>
+<tr><td><b>Dá para ligar banco e login?</b></td><td>Sim</td><td>Não</td><td>Não</td></tr>
+</table>
+<p>Na dúvida, comece pelo <b>Caminho A</b>. Os caminhos podem ser usados em conjunto.</p>
+
+<h2>3. Caminho A · Instalar no computador</h2>
+
+<div class="step"><div class="num">1</div><div><b class="t">Extraia o zip</b>
+<p><span class="os">Windows</span>Clique com o botão direito no arquivo <b>painel-transicao-para-enviar.zip</b> e escolha <b>Extrair tudo…</b>, depois <b>Extrair</b>.</p>
+<p><span class="os mac">Mac</span>Dê dois cliques no zip. A pasta aparece ao lado dele.</p>
+<div class="box see"><strong>Você deve ver</strong>Uma pasta <code>painel-transicao-para-enviar</code> com <code>COMECE-AQUI.txt</code> e três subpastas: <code>1-instalador</code>, <code>2-projeto-completo</code> e <code>3-seus-dados</code>.</div>
+<div class="box warn"><strong>Não rode de dentro do zip</strong>Se o Windows abrir o zip como pasta, ainda não está extraído. Use <b>Extrair tudo</b>.</div></div></div>
+
+<div class="step"><div class="num">2</div><div><b class="t">Coloque o arquivo de dados (se você recebeu um)</b>
+<p>Copie o arquivo <code>.json</code> para a pasta <code>3-seus-dados</code>. Você vai usá-lo no passo 6.</p></div></div>
+
+<div class="step"><div class="num">3</div><div><b class="t">Verifique se o Python está instalado</b>
+<p>O instalador é um programa em Python.</p>
+<p><span class="os">Windows</span>Abra o menu Iniciar, digite <b>cmd</b> e abra o <b>Prompt de Comando</b>. Digite:</p>
+<pre class="cmd">py --version</pre>
+<p><span class="os mac">Mac</span>Abra o <b>Terminal</b> (aperte Cmd + Espaço, digite <b>Terminal</b> e Enter). Digite:</p>
+<pre class="cmd">python3 --version</pre>
+<div class="box see"><strong>Você deve ver</strong>Algo como <code>Python 3.11.4</code>. Qualquer número 3.7 ou maior serve. Se aparecer isso, pule para o passo 5.</div>
+<div class="box warn"><strong>Se aparecer erro ou o Mac pedir para instalar ferramentas</strong>Vá para o passo 4. No Mac, se abrir uma janela oferecendo as "ferramentas de desenvolvedor", aceite e espere terminar.</div></div></div>
+
+<div class="step"><div class="num">4</div><div><b class="t">Instale o Python (só se faltar)</b>
+<ol>
+<li>Abra <b>python.org/downloads</b> e baixe a versão mais recente.</li>
+<li><span class="os">Windows</span>Abra o instalador e, <b>antes de clicar em Install Now</b>, marque a caixa <b>“Add python.exe to PATH”</b>. Sem isso o atalho não funciona.</li>
+<li>Conclua a instalação. <b>Feche e abra de novo</b> o Prompt de Comando ou o Terminal e repita o passo 3.</li>
+</ol></div></div>
+
+<div class="step"><div class="num">5</div><div><b class="t">Rode o instalador</b>
+<p><span class="os">Windows</span>Abra a pasta <code>1-instalador</code> e dê <b>dois cliques em instalar-windows.bat</b>.</p>
+<div class="box warn"><strong>Se o Windows mostrar “O Windows protegeu o computador”</strong>Clique em <b>Mais informações</b> e depois em <b>Executar assim mesmo</b>. O arquivo é um texto simples que só chama o instalador. Se preferir, abra-o no Bloco de Notas e confira.</div>
+<p><span class="os mac">Mac</span>No Terminal, entre na pasta do instalador e rode. Dica: digite <code>cd </code> (com espaço no fim), arraste a pasta <code>1-instalador</code> para a janela do Terminal e aperte Enter. Depois:</p>
+<pre class="cmd">python3 instalar-painel-transicao.py --abrir</pre>
+<div class="box see"><strong>Você deve ver</strong>Mensagens como <code>Instalado em: …/PainelTransicao</code> e <code>19 arquivos gravados</code>, seguidas de “Próximos passos”. O painel abre no navegador.</div>
+<div class="box info"><strong>Onde fica</strong>O projeto é instalado na pasta <code>PainelTransicao</code>, dentro da sua pasta pessoal. Para outro local, rode o instalador com <code>--destino "CAMINHO"</code>.</div></div></div>
+
+<div class="step"><div class="num">6</div><div><b class="t">Traga os dados preenchidos</b>
+<ol>
+<li>No painel aberto no navegador, clique na aba <b>Salvar e restaurar</b>.</li>
+<li>Em <b>Restaurar de um arquivo</b>, escolha o <code>.json</code> da pasta <code>3-seus-dados</code>.</li>
+</ol>
+<div class="box see"><strong>Você deve ver</strong>Uma faixa verde: <code>Dados restaurados: … ofícios, … riscos, … autoridades.</code> Confira os números nos quadros acima.</div>
+<div class="box bad"><strong>Se aparecer “Erro: …”</strong>O arquivo está incompleto ou não é do painel. Peça a quem enviou para exportar de novo, usando <b>Copiar dados</b>, e cole o texto no campo “Ou cole os dados aqui”.</div>
+<p>Sem arquivo de dados, o painel abre só com os <b>dados de exemplo</b>.</p></div></div>
+
+<div class="step"><div class="num">7</div><div><b class="t">Instale o Claude Code</b>
+<p>É o programa que deixa o Claude trabalhar direto nos arquivos do projeto.</p>
+<ol>
+<li>Siga o guia oficial: <b>code.claude.com/docs</b>. Ele é a fonte mais atualizada.</li>
+<li>Uma forma comum: instale o <b>Node.js</b> (versão LTS, em nodejs.org) e, no terminal, rode:</li>
+</ol>
+<pre class="cmd">npm install -g @anthropic-ai/claude-code</pre>
+<p>Para conferir, rode <code>claude --version</code>. Na primeira vez que abrir o <code>claude</code>, ele pede o login com a sua conta do Claude.</p></div></div>
+
+<div class="step"><div class="num">8</div><div><b class="t">Comece a trabalhar com o Claude</b>
+<p>No terminal, entre na pasta do projeto e abra o Claude:</p>
+<pre class="cmd">cd ~/PainelTransicao
+claude</pre>
+<p>No <span class="os">Windows</span>use <code>cd ~\PainelTransicao</code> no PowerShell (o Terminal do Windows 11).</p>
+<p>Digite <code>/primeiro-contato</code> e aperte Enter. O Claude lê o projeto, explica o que existe e propõe os próximos passos, <b>sem alterar nada</b>.</p>
+<div class="box info"><strong>Outros comandos prontos</strong><code>/testar</code> roda os testes. <code>/restaurar-dados</code> ajuda a carregar um arquivo de dados.</div>
+<div class="box warn"><strong>Autorizações</strong>O Claude pede licença antes de alterar arquivos ou rodar comandos. Leia o que ele pretende fazer e só então aprove. Peça <b>uma melhoria por vez</b>.</div></div></div>
+
+<div class="step"><div class="num">9</div><div><b class="t">(Opcional) Rode os testes</b>
+<p>Os testes simulam o uso do painel e conferem se tudo continua funcionando. Precisa do Node.js. Na pasta do projeto:</p>
+<pre class="cmd">npm install
+npx playwright install chromium
+npm test</pre>
+<div class="box see"><strong>Você deve ver</strong>Várias linhas <code>OK</code> e, no fim, <code>Todas as verificações passaram.</code></div></div></div>
+
+<h2>4. Caminho B · Só com o Claude no navegador</h2>
+<p>Para quem não quer instalar nada. O Claude lê e melhora os arquivos, mas <b>não grava no seu computador</b>: ele devolve o arquivo novo para você salvar.</p>
+<div class="step"><div class="num">1</div><div><b class="t">Extraia o zip</b> como no passo 1 do Caminho A.</div></div>
+<div class="step"><div class="num">2</div><div><b class="t">Crie um Projeto</b>
+<p>Em <b>claude.ai</b>, crie um Projeto chamado <b>Painel da Transição</b>.</p></div></div>
+<div class="step"><div class="num">3</div><div><b class="t">Anexe o contexto</b>
+<p>Em <b>Conhecimento do projeto</b>, anexe estes arquivos da pasta <code>2-projeto-completo</code>: <code>CLAUDE.md</code>, <code>TUTORIAL.md</code>, <code>CHECKLIST.md</code>, <code>docs/ESPECIFICACAO.md</code> e <code>docs/AUTORIDADES.md</code>.</p>
+<p>Em <b>Instruções do projeto</b>, cole: <i>“Siga o CLAUDE.md. Responda em português do Brasil. Não invente fatos jurídicos nem nomes.”</i></p></div></div>
+<div class="step"><div class="num">4</div><div><b class="t">Peça a melhoria</b>
+<p>Abra uma conversa dentro do Projeto, anexe <code>painel-transicao.html</code> e descreva o que quer. Exemplo: <i>“Crie a aba Plano dos 100 dias com medida, secretaria, tipo, meta, responsável e prazo.”</i></p></div></div>
+<div class="step"><div class="num">5</div><div><b class="t">Salve o arquivo novo</b>
+<p>Baixe o HTML que o Claude devolver e salve <b>por cima</b> do antigo, depois de <b>guardar uma cópia</b> da versão anterior (por exemplo <code>painel-transicao-antigo.html</code>). Abra no navegador para conferir.</p></div></div>
+<div class="box warn"><strong>Limite do Caminho B</strong>Banco de dados, login, anexos reais e testes automáticos precisam do Caminho A.</div>
+
+<h2>5. Caminho C · Editar o mesmo painel online</h2>
+<p>Quem enviou o projeto pode compartilhar a <b>página online do painel</b> com <b>permissão de edição</b>. Assim você abre o link no seu Claude e pede mudanças, e a página publicada é atualizada no mesmo endereço.</p>
+<div class="step"><div class="num">1</div><div><b class="t">Receba o convite</b>
+<p>Quem enviou usa o menu <b>Compartilhar</b> (Share) da própria página e convida o seu e-mail com permissão para <b>editar</b>. Os nomes exatos das opções podem variar conforme o plano. Um link só para visualização <b>não</b> permite editar.</p></div></div>
+<div class="step"><div class="num">2</div><div><b class="t">Abra o link no claude.ai e peça a mudança</b>
+<p>Entre com a conta que recebeu o convite, abra uma conversa no Claude e cole o link, dizendo o que quer mudar. O Claude lê a página, altera e publica a nova versão.</p></div></div>
+<div class="step"><div class="num">3</div><div><b class="t">Confira e avise</b>
+<p>Abra o link, teste a mudança e avise quem enviou. <b>Duas pessoas editando ao mesmo tempo</b> podem sobrepor o trabalho uma da outra: combinem quem edita e quando.</p></div></div>
+<div class="box warn"><strong>Cuidados</strong>Antes de editar, baixe uma cópia do painel (aba Salvar e restaurar, e o arquivo <code>painel-transicao.html</code>). Os dados digitados ficam no navegador de cada pessoa e <b>não</b> mudam quando a página é atualizada. Esse caminho não grava arquivos no seu computador e não roda testes.</div>
+
+<h2>6. Como guardar o seu trabalho</h2>
+<p>O painel salva sozinho <b>neste navegador</b>, mas isso some se você limpar os dados do navegador ou trocar de computador. A cópia segura é o arquivo:</p>
+<ol>
+<li>Abra a aba <b>Salvar e restaurar</b>.</li>
+<li>Clique em <b>Baixar dados (arquivo JSON)</b>. Se o download for bloqueado, use <b>Copiar dados</b> e cole em um arquivo de texto salvo como <code>.json</code>.</li>
+<li>Guarde em <code>PainelTransicao/dados/</code> com um nome como <code>meus-dados-2026-11-05.json</code>. Arquivos que começam com <code>meus-</code> não vão para o Git nem para o instalador.</li>
+</ol>
+<div class="box warn"><strong>O que o arquivo não leva</strong>O <b>conteúdo</b> dos anexos (só os nomes). Guarde os documentos em uma pasta à parte.</div>
+
+<h2>7. Como atualizar uma instalação existente</h2>
+<p>Se receber um instalador novo, rode-o com <code>--atualizar</code>:</p>
+<pre class="cmd">python3 instalar-painel-transicao.py --atualizar</pre>
+<ul>
+<li>É criada uma <b>cópia de segurança</b> da pasta atual (<code>PainelTransicao.backup-DATA</code>).</li>
+<li>A pasta <code>dados/</code> <b>nunca</b> é sobrescrita.</li>
+<li>Arquivos fora de <code>dados/</code> que você tenha melhorado <b>voltam à versão do instalador</b>. Se isso acontecer, recupere o que precisa na cópia de segurança.</li>
+</ul>
+
+<h2>8. Problemas comuns</h2>
+<table>
+<tr><th style="width:34%">O que acontece</th><th>O que fazer</th></tr>
+<tr><td>O <code>.bat</code> abre e fecha logo, ou diz que não achou o Python</td><td>Instale o Python marcando “Add python.exe to PATH” (passo 4) e tente de novo.</td></tr>
+<tr><td>No Windows, “py” ou “python” abre a Microsoft Store</td><td>O Python não está instalado de verdade. Instale pelo site python.org.</td></tr>
+<tr><td>“O instalador está corrompido (SHA-256)”</td><td>O arquivo foi alterado ou o download falhou. Peça o zip de novo e extraia outra vez.</td></tr>
+<tr><td>“A pasta já existe”</td><td>Proteção contra apagar seu trabalho. Use <code>--atualizar</code> (com cópia de segurança) ou <code>--destino</code> para outra pasta.</td></tr>
+<tr><td>O painel abre sem as fontes bonitas</td><td>É só a fonte da internet bloqueada. Funciona igual.</td></tr>
+<tr><td>Os dados sumiram ao abrir de novo</td><td>O navegador limpou o armazenamento. Restaure pelo arquivo <code>.json</code> (aba Salvar e restaurar).</td></tr>
+<tr><td>O download do JSON não começa</td><td>Use <b>Copiar dados</b> e cole em um arquivo <code>.json</code>.</td></tr>
+<tr><td><code>claude</code> não é reconhecido</td><td>Feche e abra o terminal. Se persistir, refaça o passo 7 pelo guia oficial.</td></tr>
+<tr><td><code>npm test</code> diz que falta o navegador</td><td>Rode <code>npx playwright install chromium</code>.</td></tr>
+<tr><td>O Claude inventou um nome, número ou artigo de lei</td><td>Peça a fonte. Se não houver, deve ficar <code>[entre colchetes]</code> ou “A definir”.</td></tr>
+</table>
+
+<h2>9. Cuidados com a informação</h2>
+<ul>
+<li><b>Não coloque no protótipo</b> dados reais de pessoas, documentos sigilosos, senhas ou chaves.</li>
+<li>Os titulares das secretarias vieram de notícias e <b>não estão conferidos</b>. Confirme no Diário Oficial antes de enviar qualquer ofício.</li>
+<li>As regras de conflito de interesses e quem assina os ofícios são <b>sugestões</b>. Peça parecer jurídico antes de adotá-las.</li>
+<li>Se o projeto for para o GitHub, use um <b>repositório privado e separado</b> do site da campanha.</li>
+<li>Para o sistema real (banco de dados, login), siga o <code>CHECKLIST.md</code>. O banco de dados deve ficar em ambiente <b>separado</b> do site da campanha.</li>
+</ul>
+
+<h2>10. Glossário rápido</h2>
+<table>
+<tr><td style="width:28%"><b>Terminal</b></td><td>Janela onde se digitam comandos. No Windows: Prompt de Comando ou PowerShell. No Mac: Terminal.</td></tr>
+<tr><td><b>Pasta pessoal</b></td><td>Sua pasta de usuário (<code>C:\Users\seunome</code> no Windows, <code>/Users/seunome</code> no Mac).</td></tr>
+<tr><td><b>Claude Code</b></td><td>Programa que deixa o Claude ler e alterar os arquivos de uma pasta, com a sua autorização.</td></tr>
+<tr><td><b>JSON</b></td><td>Formato de arquivo de texto onde o painel guarda os dados.</td></tr>
+<tr><td><b>Instalador</b></td><td>O arquivo <code>instalar-painel-transicao.py</code>, que contém o projeto inteiro.</td></tr>
+<tr><td><b>Supabase</b></td><td>Serviço de banco de dados e login da versão real do sistema (ainda não ligado).</td></tr>
+</table>
+
+<h2>Resumo de uma página</h2>
+<ol>
+<li>Extrair o zip. Copiar o <code>.json</code> para <code>3-seus-dados</code>.</li>
+<li>Ter o Python (python.org, marcar “Add to PATH” no Windows).</li>
+<li>Windows: dois cliques em <code>instalar-windows.bat</code>. Mac: <code>python3 instalar-painel-transicao.py --abrir</code>.</li>
+<li>No painel: <b>Salvar e restaurar › Restaurar de um arquivo</b>.</li>
+<li>Instalar o Claude Code (code.claude.com/docs).</li>
+<li><code>cd ~/PainelTransicao</code>, <code>claude</code>, <code>/primeiro-contato</code>.</li>
+<li>Ao terminar o dia: <b>Salvar e restaurar › Baixar dados</b> e guardar em <code>dados/</code>.</li>
+</ol>
+
+<footer>Painel da Transição · Manual de instalação · O instalador para Windows (.bat) ainda não foi testado em Windows. Em caso de dúvida, consulte o TUTORIAL.md e o CHECKLIST.md do projeto.</footer>
+</main>
+</body>
+</html>

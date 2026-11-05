@@ -10,6 +10,7 @@ Este pacote traz o protótipo do Painel da Transição, o contexto do projeto e 
 | `CLAUDE.md` | Contexto e regras do projeto. O Claude lê este arquivo primeiro. |
 | `dados/` | Instantâneo dos dados que já vêm no protótipo (`dados-iniciais.json`) e onde guardar seus backups. |
 | `.claude/commands/` | Comandos prontos para o Claude Code: `/primeiro-contato`, `/testar`, `/restaurar-dados`. |
+| `MANUAL-DE-INSTALACAO.pdf` | Manual de instalação passo a passo, para quem recebe o projeto (há também a versão `.html`). |
 | `CHECKLIST.md` | O que precisa ser feito, em ordem, para o painel funcionar de verdade. |
 | `PROMPTS.md` | Textos prontos para colar no Claude. |
 | `docs/ESPECIFICACAO.md` | Resumo do Kit de Transição, fluxos, perfis e regras de negócio. |
@@ -21,6 +22,18 @@ Este pacote traz o protótipo do Painel da Transição, o contexto do projeto e 
 | `tests/fluxos.test.cjs` | Teste automático das ligações entre as abas. |
 
 **Importante:** o documento original (Kit de Transição de Governo Estadual, 14 páginas, de 30/9/2026) não vai dentro do pacote. Peça o PDF à coordenação e anexe-o ao Claude quando for pedir algo que dependa de detalhes do kit.
+
+## Como deixar outra pessoa editar o painel pelo Claude dela
+
+Há três jeitos, que podem ser combinados:
+
+| Jeito | O que a pessoa faz | Quando usar |
+|---|---|---|
+| **1. Link de edição do painel online** | Você usa o menu Compartilhar (Share) da página e convida o e-mail dela **com permissão de edição**. Ela abre o link no claude.ai, descreve a mudança e o Claude publica a nova versão no mesmo endereço. | Ajustes rápidos de tela e texto. Não roda testes nem grava arquivos. Cuidado com duas pessoas editando ao mesmo tempo. |
+| **2. Pacote com instalador** (`painel-transicao-para-enviar.zip`) | Ela instala no computador e usa o Claude Code, ou usa o Claude no navegador com os arquivos do projeto. | Cada pessoa trabalha em uma cópia própria. Para juntar, uma devolve o `painel-transicao.html` e o `.json` de dados. |
+| **3. Repositório privado no GitHub compartilhado** | Você cria um repositório **privado e separado do site de campanha** e convida a pessoa como colaboradora. O Claude Code dela clona, altera e envia as mudanças, e você recebe tudo com histórico. | Trabalho contínuo em dupla, com testes e histórico de cada mudança. É o mais seguro para evoluir o sistema. |
+
+Recomendação: use o jeito 3 para construir a versão real e o jeito 1 para ajustes visuais rápidos. O manual (`MANUAL-DE-INSTALACAO.pdf`) explica os passos para quem recebe.
 
 ## Instalação rápida (um arquivo só)
 
